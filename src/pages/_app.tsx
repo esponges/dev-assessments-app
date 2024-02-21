@@ -2,8 +2,10 @@ import type { AppProps } from 'next/app';
 import { Inter as FontSans } from 'next/font/google';
 import { NextPage } from 'next';
 import { ReactElement, ReactNode } from 'react';
-import { PagesNavigation } from '@/components/layouts/pages-navigation';
+
+import { Navigation } from '@/components/layouts/pages/navigation';
 import { cn } from '@/lib/utils';
+import { ShadcnWrapper } from '@/components/layouts/pages/shadcn-wrapper';
 import '@/app/globals.css';
 
 export const fontSans = FontSans({
@@ -19,10 +21,18 @@ type Props = AppProps & {
   Component: Page;
 };
 
+function DefaultLayour({ children }: { children: React.ReactNode }) {
+  return (
+    <ShadcnWrapper>
+      <Navigation>{children}</Navigation>
+    </ShadcnWrapper>
+  );
+}
+
 export default function App({ Component, pageProps }: Props) {
   const getLayout =
     Component.getLayout ||
-    ((page: React.ReactNode) => <PagesNavigation>{page}</PagesNavigation>);
+    ((page: React.ReactNode) => <DefaultLayour>{page}</DefaultLayour>);
 
   return getLayout(
     <Component

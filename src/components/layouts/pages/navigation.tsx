@@ -22,7 +22,7 @@ const links = [
   { href: '/get-profiles', label: 'Get Developer Profiles' },
 ];
 
-export function PagesNavigation({ children }: { children: React.ReactNode }) {
+export function Navigation({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
