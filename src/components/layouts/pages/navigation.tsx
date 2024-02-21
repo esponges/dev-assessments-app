@@ -1,45 +1,32 @@
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   NavigationMenuViewport,
+  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import { cn } from '@/lib/utils';
-import { Inter as FontSans } from 'next/font/google';
-
-export const fontSans = FontSans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
+import Link from 'next/link';
 
 const links = [
-  { href: '/assess-profile', label: 'Assess Dev Profile' },
-  { href: '/evaluate', label: 'Evaluate Developer' },
-  { href: '/get-profiles', label: 'Get Developer Profiles' },
+  { href: 'app/assess-profile', title: 'Assess Dev Profile' },
+  { href: 'app/evaluate', title: 'Evaluate Developer' },
+  { href: 'app/get-profiles', title: 'Get Developer Profiles' },
 ];
 
 export function Navigation({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className={cn(
-        'min-h-screen bg-background font-sans antialiased',
-        fontSans.variable
-      )}
-    >
-      <NavigationMenu>
+    <>
+      <NavigationMenu className='mx-auto'>
         <NavigationMenuList>
           {links.map((link, index) => (
             <NavigationMenuItem key={index}>
-              <NavigationMenuTrigger>{link.label}</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <NavigationMenuLink href={link.href}>
-                  {link.label}
+              <Link href={link.href} legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  {link.title}
                 </NavigationMenuLink>
-              </NavigationMenuContent>
+              </Link>
             </NavigationMenuItem>
           ))}
         </NavigationMenuList>
@@ -47,6 +34,6 @@ export function Navigation({ children }: { children: React.ReactNode }) {
         <NavigationMenuViewport />
       </NavigationMenu>
       {children}
-    </div>
+    </>
   );
 }
