@@ -5,130 +5,17 @@ import { Input } from '@/components/ui/input';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Alert } from '@/components/molecules/alert';
+import { Container } from '@/components/layouts/container';
 
-export const dynamic = 'force-dynamic';
+type TechStack = {
+  tech: string;
+  years_of_experience: number;
+};
 
-const testData = {
+type MutationResponse = {
   LLMParsedResponse: {
-    tech_stack: [
-      {
-        tech: 'Vue.js',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'Vuex',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'Nuxt.js',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'JavaScript ES6',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'HTML5',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'CSS3',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'SASS',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'Node.js',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'Express',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'MongoDB',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'MySQL',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'Docker',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'Nginx',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'AWS',
-        years_of_experience: 5,
-      },
-      {
-        tech: 'Python',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Django',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Flask',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Ruby on Rails',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'RESTful APIs',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'GraphQL',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Java',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'SpringBoot',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Kafka',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Redis',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Elasticsearch',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Celery',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'RabbitMQ',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Docker',
-        years_of_experience: 8,
-      },
-      {
-        tech: 'Kubernetes',
-        years_of_experience: 8,
-      },
-    ],
-  },
+    tech_stack: TechStack[];
+  };
 };
 
 const onUpload = async (file: File) => {
@@ -159,9 +46,13 @@ const onUpload = async (file: File) => {
 
 export default function AssessProfile() {
   const [file, setFile] = useState<File | null>(null);
-  const { data, mutate, isPending } = useMutation<typeof testData, Error, File>(
+  const [stack, setStack] = useState<TechStack[]>([]);
+  const { data, mutate, isPending } = useMutation<MutationResponse, Error, File>(
     {
       mutationFn: onUpload,
+      onSuccess: (data) => {
+        setStack(data.LLMParsedResponse.tech_stack);
+      },
     }
   );
 
@@ -171,8 +62,21 @@ export default function AssessProfile() {
     }
   };
 
+  const handleTechStackUpdate = (key: string, value: number) => {
+    const updatedStack = stack.map((el) => {
+      if (el.tech === key) {
+        return {
+          ...el,
+          years_of_experience: value,
+        };
+      }
+      return el;
+    });
+    setStack(updatedStack);
+  };
+
   return (
-    <main className='flex min-h-screen flex-col items-center py-12 w-1/4 mx-auto'>
+    <Container>
       <InputFile
         handleChange={(e) => {
           const file = e.target.files?.[0];
@@ -184,17 +88,26 @@ export default function AssessProfile() {
         label='Upload your resume'
       />
       <Label className='my-4'>{file?.name || ''}</Label>
+      <Alert
+        title='We will analyze your resume'
+        description='This will help us to understand your skills and experience.'
+        className='my-4'
+      />
       <Button
         onClick={handleUpload}
         className='my-4'
-        disabled={!file || isPending}
+        disabled={!file || isPending || !!stack.length}
       >
-        {!file ? 'Please select a file' : isPending ? 'Uploading...' : 'Upload'}
+        {!file
+          ? 'Please select a file'
+          : isPending
+          ? 'Analyzing...'
+          : 'Analyze'}
       </Button>
-      {testData ? (
+      {!!stack.length ? (
         <>
           <h1 className='text-2xl font-bold my-4'>Stack (years)</h1>
-          {testData.LLMParsedResponse.tech_stack.map((el, i) => (
+          {stack.map((el, i) => (
             <div
               key={el.tech + i}
               className='grid items-center gap-1.5 my-1 grid-cols-2'
@@ -205,20 +118,20 @@ export default function AssessProfile() {
                 id={el.tech}
                 className='max-w-[4rem]'
                 value={el.years_of_experience}
-                onChange={(e) => {
-                  console.log('e', e.target.value);
-                }}
+                onChange={(e) =>
+                  handleTechStackUpdate(el.tech, Number(e.target.value))
+                }
               />
             </div>
           ))}
           <Alert
             title='Please confirm the years of experience for each technology'
-            description='The years of experience for each technology is required to proceed'
+            description='In case the years of experience are not accurate, please update the values.'
             className='my-4'
           />
           <Button>Confirm</Button>
         </>
       ) : null}
-    </main>
+    </Container>
   );
 }
