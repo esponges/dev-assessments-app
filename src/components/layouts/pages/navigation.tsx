@@ -10,9 +10,9 @@ import {
 import Link from 'next/link';
 
 const links = [
-  { href: 'app/assess-profile', title: 'Assess Dev Profile' },
-  { href: 'app/evaluate', title: 'Evaluate Developer' },
-  { href: 'app/get-profiles', title: 'Get Developer Profiles' },
+  { href: 'assess-profile', title: 'Assess Dev Profile' },
+  { href: 'evaluate', title: 'Evaluate Developer' },
+  { href: 'get-profiles', title: 'Get Developer Profiles' },
 ];
 
 export function Navigation({ children }: { children: React.ReactNode }) {
