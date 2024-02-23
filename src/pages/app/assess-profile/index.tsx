@@ -197,13 +197,13 @@ export default function AssessProfile() {
           {testData.LLMParsedResponse.tech_stack.map((el, i) => (
             <div
               key={el.tech + i}
-              className='grid w-full items-center gap-1.5 my-1'
+              className='grid items-center gap-1.5 my-1 grid-cols-2'
             >
               <Label htmlFor={el.tech}>{el.tech}</Label>
               <Input
                 type='number'
                 id={el.tech}
-                className='w-full'
+                className='max-w-[4rem]'
                 value={el.years_of_experience}
                 onChange={(e) => {
                   console.log('e', e.target.value);
@@ -216,6 +216,7 @@ export default function AssessProfile() {
             description='The years of experience for each technology is required to proceed'
             className='my-4'
           />
+          <Button>Confirm</Button>
         </>
       ) : null}
     </main>
