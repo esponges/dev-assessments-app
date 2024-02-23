@@ -152,7 +152,8 @@ const onUpload = async (file: File) => {
     throw new Error('Network response was not ok');
   }
 
-  return res.json();
+  const json = await res.json();
+  return json;
 };
 
 export default function AssessProfile() {
@@ -160,15 +161,18 @@ export default function AssessProfile() {
   const { data, mutate, isPending } = useMutation<typeof testData, Error, File>(
     {
       mutationFn: onUpload,
-      onSuccess: (data) => {
-        console.log('resolved', data);
-      },
+      // onSuccess: (data) => {
+      //   console.log('resolved', data);
+      // },
+      // onMutate: (file) => {
+      //   console.log('onMutate', file);
+      // }
     }
   );
 
   const handleUpload = async () => {
     if (file) {
-      await onUpload(file);
+      mutate(file);
     }
   };
 
@@ -187,7 +191,7 @@ export default function AssessProfile() {
         label='Upload your resume'
       />
       <Label className='my-4'>{file?.name || ''}</Label>
-      <Button onClick={handleUpload} className='my-4' disabled={!file}>
+      <Button onClick={handleUpload} className='my-4' disabled={!file || isPending}>
         {!file ? 'Please select a file' : isPending ? 'Uploading...' : 'Upload'}
       </Button>
       {testData ? (
