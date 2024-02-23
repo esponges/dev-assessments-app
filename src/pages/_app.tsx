@@ -1,6 +1,10 @@
 import type { AppProps } from 'next/app';
 import { NextPage } from 'next';
 import { ReactElement, ReactNode } from 'react';
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
 
 import { Navigation } from '@/components/layouts/pages/navigation';
 import { ShadcnWrapper } from '@/components/layouts/pages/shadcn-wrapper';
@@ -13,6 +17,8 @@ type Page<P = {}> = NextPage<P> & {
 type Props = AppProps & {
   Component: Page;
 };
+
+const queryClient = new QueryClient();
 
 function DefaultLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -27,5 +33,9 @@ export default function App({ Component, pageProps }: Props) {
     Component.getLayout ||
     ((page: React.ReactNode) => <DefaultLayout>{page}</DefaultLayout>);
 
-  return getLayout(<Component {...pageProps} />);
+  return getLayout(
+    <QueryClientProvider client={queryClient}>
+      <Component {...pageProps} />
+    </QueryClientProvider>
+  );
 }
