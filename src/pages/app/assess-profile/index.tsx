@@ -4,6 +4,7 @@ import { Label } from '@radix-ui/react-label';
 import { Input } from '@/components/ui/input';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Alert } from '@/components/molecules/alert';
 
 export const dynamic = 'force-dynamic';
 
@@ -161,12 +162,6 @@ export default function AssessProfile() {
   const { data, mutate, isPending } = useMutation<typeof testData, Error, File>(
     {
       mutationFn: onUpload,
-      // onSuccess: (data) => {
-      //   console.log('resolved', data);
-      // },
-      // onMutate: (file) => {
-      //   console.log('onMutate', file);
-      // }
     }
   );
 
@@ -176,10 +171,8 @@ export default function AssessProfile() {
     }
   };
 
-  console.log({ data, isPending });
-
   return (
-    <main className='flex min-h-screen flex-col items-center py-12'>
+    <main className='flex min-h-screen flex-col items-center py-12 w-1/4 mx-auto'>
       <InputFile
         handleChange={(e) => {
           const file = e.target.files?.[0];
@@ -191,18 +184,26 @@ export default function AssessProfile() {
         label='Upload your resume'
       />
       <Label className='my-4'>{file?.name || ''}</Label>
-      <Button onClick={handleUpload} className='my-4' disabled={!file || isPending}>
+      <Button
+        onClick={handleUpload}
+        className='my-4'
+        disabled={!file || isPending}
+      >
         {!file ? 'Please select a file' : isPending ? 'Uploading...' : 'Upload'}
       </Button>
       {testData ? (
         <>
-          <h1 className='text-2xl font-bold my-4'>Stack</h1>
+          <h1 className='text-2xl font-bold my-4'>Stack (years)</h1>
           {testData.LLMParsedResponse.tech_stack.map((el, i) => (
-            <div key={el.tech + i} className='grid w-full max-w-sm items-center gap-1.5 my-1'>
+            <div
+              key={el.tech + i}
+              className='grid w-full items-center gap-1.5 my-1'
+            >
               <Label htmlFor={el.tech}>{el.tech}</Label>
               <Input
                 type='number'
                 id={el.tech}
+                className='w-full'
                 value={el.years_of_experience}
                 onChange={(e) => {
                   console.log('e', e.target.value);
@@ -210,6 +211,11 @@ export default function AssessProfile() {
               />
             </div>
           ))}
+          <Alert
+            title='Please confirm the years of experience for each technology'
+            description='The years of experience for each technology is required to proceed'
+            className='my-4'
+          />
         </>
       ) : null}
     </main>
