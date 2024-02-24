@@ -1,9 +1,10 @@
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+
+import { Label } from '@/components/ui/label';
 import { InputFile } from '@/components/atoms/input-file';
 import { Button } from '@/components/ui/button';
-import { Label } from '@radix-ui/react-label';
 import { Input } from '@/components/ui/input';
-import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
 import { Alert } from '@/components/molecules/alert';
 import { Container } from '@/components/layouts/container';
 
@@ -18,7 +19,7 @@ type MutationResponse = {
   };
 };
 
-const getCandidates = async (file: File) => {
+const parseResume = async (file: File) => {
   const body = {
     resume: 'file',
     upsert: false,
@@ -49,7 +50,7 @@ export default function AssessProfile() {
   const [stack, setStack] = useState<TechStack[]>([]);
   const { mutate, isPending } = useMutation<MutationResponse, Error, File>(
     {
-      mutationFn: getCandidates,
+      mutationFn: parseResume,
       onSuccess: (data) => {
         setStack(data.LLMParsedResponse.tech_stack);
       },
