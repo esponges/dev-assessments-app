@@ -18,7 +18,7 @@ type MutationResponse = {
   };
 };
 
-const onUpload = async (file: File) => {
+const getCandidates = async (file: File) => {
   const body = {
     resume: 'file',
     upsert: false,
@@ -47,9 +47,9 @@ const onUpload = async (file: File) => {
 export default function AssessProfile() {
   const [file, setFile] = useState<File | null>(null);
   const [stack, setStack] = useState<TechStack[]>([]);
-  const { data, mutate, isPending } = useMutation<MutationResponse, Error, File>(
+  const { mutate, isPending } = useMutation<MutationResponse, Error, File>(
     {
-      mutationFn: onUpload,
+      mutationFn: getCandidates,
       onSuccess: (data) => {
         setStack(data.LLMParsedResponse.tech_stack);
       },
