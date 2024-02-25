@@ -6,6 +6,7 @@ const fontSans = FontSans({
   variable: '--font-sans',
 });
 
+// wraps shadcn to a pages router app
 export function ShadcnWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div
