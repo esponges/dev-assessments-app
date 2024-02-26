@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
+import { Container } from '@/components/layouts/container';
 
 type DevDetails = {
   id: string;
@@ -112,13 +113,13 @@ export default function Evaluate() {
   };
 
   return (
-    <div>
+    <Container>
       <h1>Evaluate</h1>
       <h2>Dev details</h2>
       {isLoading && <p>Loading...</p>}
       {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
       <button onClick={handleGenerateAssessment}>Generate assessment</button>
       {assessment && <pre>{JSON.stringify(assessment, null, 2)}</pre>}
-    </div>
+    </Container>
   );
 }

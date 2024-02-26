@@ -15,7 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-type Response = {
+type DevProfileResponse = {
   searchResults: {
     similaritySearchResults: {
       matches: {
@@ -67,7 +67,7 @@ const getCandidatesProfiles = async (description: string) => {
 
 export default function DevProfiles() {
   const [description, setDescription] = useState('');
-  const { data, isLoading, refetch } = useQuery<Response>({
+  const { data, isLoading, refetch } = useQuery<DevProfileResponse>({
     queryKey: ['profiles'],
     queryFn: () => getCandidatesProfiles(description),
     enabled: false,
