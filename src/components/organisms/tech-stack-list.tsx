@@ -7,19 +7,11 @@ import type { TechStack } from '@/types';
 import { Button } from '../ui/button';
 
 type Props = {
-  techStack: TechStack;
-  onStackChange?: (stack: TechStack) => void;
+  stack: TechStack;
+  setStack: (stack: TechStack) => void;
 };
 
-export function TechStackList({ techStack, onStackChange }: Props) {
-  const [stack, setStack] = useState<TechStack>(techStack);
-
-  const handleStackChange = (stack: TechStack) => {
-    if (onStackChange) {
-      onStackChange(stack);
-    }
-  };
-
+export function TechStackList({ stack, setStack }: Props) {
   const handleTechStackUpdate = (key: string, value: number) => {
     const updatedStack =
       value > 0
@@ -35,12 +27,10 @@ export function TechStackList({ techStack, onStackChange }: Props) {
         : stack.filter((el) => el.tech !== key);
 
     setStack(updatedStack);
-    handleStackChange(updatedStack);
   };
 
   const handleRemoveTech = (key: string) => {
     handleTechStackUpdate(key, 0);
-    handleStackChange(stack);
   };
 
   const handleAddTech = (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,7 +50,6 @@ export function TechStackList({ techStack, onStackChange }: Props) {
     ];
 
     setStack(updatedStack);
-    handleStackChange(updatedStack);
   };
 
   return (

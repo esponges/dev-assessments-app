@@ -118,7 +118,7 @@ export default function Evaluate() {
         description='You will be evaluated based on the following tech stack'
       />
       {techStack.length > 0 ? (
-        <TechStackList techStack={techStack} onStackChange={setTechStack} />
+        <TechStackList stack={techStack} setStack={setTechStack} />
       ) : null}
       <Button onClick={handleGenerateAssessment} className='my-4'>
         Generate assessment

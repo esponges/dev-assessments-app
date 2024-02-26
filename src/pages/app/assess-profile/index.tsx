@@ -89,7 +89,7 @@ export default function AssessProfile() {
       </Button>
       {!!stack.length ? (
         <>
-          <TechStackList techStack={stack} onStackChange={setStack} />
+          <TechStackList stack={stack} setStack={setStack} />
           <Alert
             title='Please confirm the years of experience for each technology'
             description='In case the years of experience are not accurate, please update the values.'
