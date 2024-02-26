@@ -11,7 +11,8 @@ import Link from 'next/link';
 
 const links = [
   { href: 'assess-profile', title: 'Assess Dev Profile' },
-  { href: 'evaluate', title: 'Evaluate Developer' },
+  // todo: remove this test query
+  { href: 'evaluate?id=787da0c5-e069-45c6-9777-8b3a31e8d747', title: 'Evaluate Developer' },
   { href: 'get-profiles', title: 'Get Developer Profiles' },
 ];
 

@@ -47,7 +47,7 @@ type Response = {
 
 const getCandidatesProfiles = async (description: string) => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/candidate/similar_candidates`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/candidate/similarity_search`,
     {
       method: 'POST',
       body: JSON.stringify({ description }),
