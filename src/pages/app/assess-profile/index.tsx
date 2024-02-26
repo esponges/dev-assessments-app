@@ -10,7 +10,7 @@ import { Container } from '@/components/layouts/container';
 
 type TechStack = {
   tech: string;
-  years_of_experience: number;
+  experience: number;
 };
 
 type MutationResponse = {
@@ -77,7 +77,7 @@ export default function AssessProfile() {
   };
 
   return (
-    <Container>
+    <Container className='md:w-1/4 w-3/4'>
       <InputFile
         handleChange={(e) => {
           const file = e.target.files?.[0];
@@ -118,7 +118,7 @@ export default function AssessProfile() {
                 type='number'
                 id={el.tech}
                 className='max-w-[4rem]'
-                value={el.years_of_experience}
+                value={el.experience}
                 onChange={(e) =>
                   handleTechStackUpdate(el.tech, Number(e.target.value))
                 }
