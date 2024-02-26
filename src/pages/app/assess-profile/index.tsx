@@ -4,18 +4,15 @@ import { useMutation } from '@tanstack/react-query';
 import { Label } from '@/components/ui/label';
 import { InputFile } from '@/components/atoms/input-file';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Alert } from '@/components/molecules/alert';
 import { Container } from '@/components/layouts/container';
 
-type TechStack = {
-  tech: string;
-  experience: number;
-};
+import type { TechStack } from '@/types';
+import { TechStackList } from '@/components/organisms/tech-stack-list';
 
 type MutationResponse = {
   LLMParsedResponse: {
-    tech_stack: TechStack[];
+    tech_stack: TechStack;
   };
 };
 
@@ -47,33 +44,18 @@ const parseResume = async (file: File) => {
 
 export default function AssessProfile() {
   const [file, setFile] = useState<File | null>(null);
-  const [stack, setStack] = useState<TechStack[]>([]);
-  const { mutate, isPending } = useMutation<MutationResponse, Error, File>(
-    {
-      mutationFn: parseResume,
-      onSuccess: (data) => {
-        setStack(data.LLMParsedResponse.tech_stack);
-      },
-    }
-  );
+  const [stack, setStack] = useState<TechStack>([]);
+  const { mutate, isPending } = useMutation<MutationResponse, Error, File>({
+    mutationFn: parseResume,
+    onSuccess: (data) => {
+      setStack(data.LLMParsedResponse.tech_stack);
+    },
+  });
 
   const handleUpload = async () => {
     if (file) {
       mutate(file);
     }
-  };
-
-  const handleTechStackUpdate = (key: string, value: number) => {
-    const updatedStack = stack.map((el) => {
-      if (el.tech === key) {
-        return {
-          ...el,
-          years_of_experience: value,
-        };
-      }
-      return el;
-    });
-    setStack(updatedStack);
   };
 
   return (
@@ -107,24 +89,7 @@ export default function AssessProfile() {
       </Button>
       {!!stack.length ? (
         <>
-          <h1 className='text-2xl font-bold my-4'>Stack (years)</h1>
-          {stack.map((el, i) => (
-            <div
-              key={el.tech + i}
-              className='grid items-center gap-1.5 my-1 grid-cols-2'
-            >
-              <Label htmlFor={el.tech}>{el.tech}</Label>
-              <Input
-                type='number'
-                id={el.tech}
-                className='max-w-[4rem]'
-                value={el.experience}
-                onChange={(e) =>
-                  handleTechStackUpdate(el.tech, Number(e.target.value))
-                }
-              />
-            </div>
-          ))}
+          <TechStackList techStack={stack} onStackChange={setStack} />
           <Alert
             title='Please confirm the years of experience for each technology'
             description='In case the years of experience are not accurate, please update the values.'

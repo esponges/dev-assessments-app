@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { TechStack } from '@/types';
 
 type DevProfileResponse = {
   searchResults: {
@@ -35,6 +36,7 @@ type DevProfileResponse = {
     id: string;
     resume: string;
     techStack: string[];
+    detailedTechStack: TechStack;
     createdAt: string;
     updatedAt: string;
     score: number;
