@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 
 import { Container } from '@/components/layouts/container';
 import { Alert } from '@/components/molecules/alert';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 import type { TechStack } from '@/types';
@@ -43,6 +41,7 @@ const getDevDetails = async (id: string) => {
   }
 
   const json = await res.json();
+
   return json;
 };
 
@@ -65,6 +64,7 @@ const generateAssessment = async ({ stack }: MutationVariables) => {
   }
 
   const json = (await res.json()) as Assessment;
+
   return json;
 };
 
@@ -81,14 +81,15 @@ export default function Evaluate() {
     queryFn: () => getDevDetails(id as string),
     enabled: !!id,
   });
+
   const { mutate: createAssessment } = useMutation<
     Assessment,
     Error,
     MutationVariables
   >({
     mutationFn: generateAssessment,
-    onSuccess: (data) => {
-      setAssessment(data);
+    onSuccess: (res) => {
+      setAssessment(res);
     },
   });
 
@@ -114,19 +115,22 @@ export default function Evaluate() {
   console.log('assessment', assessment);
 
   return (
-    <Container className='px-6'>
-      <h1 className='text-2xl font-bold my-4'>Your Stack (years)</h1>
+    <Container className="px-6">
+      <h1 className="text-2xl font-bold my-4">Your Stack (years)</h1>
       <Alert
-        className='w-[20rem] my-4'
-        title='Evaluation criteria'
-        description='You will be evaluated based on the following tech stack'
+        className="w-[20rem] my-4"
+        title="Evaluation criteria"
+        description="You will be evaluated based on the following tech stack"
       />
       {techStack.length > 0 ? (
-        <TechStackList stack={techStack} setStack={setTechStack} />
+        <TechStackList
+          stack={techStack}
+          setStack={setTechStack}
+        />
       ) : null}
       <Button
-        type='submit'
-        className='my-4'
+        type="submit"
+        className="my-4"
         onClick={handleGenerateAssessment}
         disabled={!techStack.length}
       >

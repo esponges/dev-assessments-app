@@ -1,6 +1,4 @@
 import type { AppProps } from 'next/app';
-import { NextPage } from 'next';
-import { ReactElement, ReactNode } from 'react';
 import {
   QueryClient,
   QueryClientProvider,
@@ -8,6 +6,9 @@ import {
 
 import { Navigation } from '@/components/layouts/pages/navigation';
 import { ShadcnWrapper } from '@/components/layouts/pages/shadcn-wrapper';
+
+import type { NextPage } from 'next';
+import type { ReactElement, ReactNode } from 'react';
 import '@/app/globals.css';
 
 type Page<P = {}> = NextPage<P> & {

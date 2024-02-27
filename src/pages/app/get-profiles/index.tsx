@@ -14,7 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { TechStack } from '@/types';
+
+import type { TechStack } from '@/types';
 
 type DevProfileResponse = {
   searchResults: {
@@ -22,7 +23,7 @@ type DevProfileResponse = {
       matches: {
         id: string;
         score: number;
-        values: any[];
+        values: number[];
         metadata: {
           id: string;
           tech_stack: string[];
@@ -30,7 +31,7 @@ type DevProfileResponse = {
       }[];
       namespace: string;
     };
-    questions: any[];
+    questions: string[];
   };
   candidates: {
     id: string;
@@ -64,6 +65,7 @@ const getCandidatesProfiles = async (description: string) => {
   }
 
   const json = await res.json();
+
   return json;
 };
 
@@ -84,22 +86,23 @@ export default function DevProfiles() {
   };
 
   return (
-    <Container className='w-full md:w-full md:px-12'>
+    <Container className="w-full md:w-full md:px-12">
       {!data || !description ? (
         <>
           <Alert
-            title='What kind of developer are you looking for?'
-            description='Briefly describe the kind of developer you are looking for and we will find the best match for you.'
+            title="What kind of developer are you looking for?"
+            description={`Briefly describe the kind of developer you are looking for
+             and we will find the best match for you.`}
           />
           <Textarea
-            placeholder='We are looking for a senior developer with React, Node.js, and MongoDB experience.'
-            className='mt-4'
+            placeholder="We are looking for a senior developer with React, Node.js, and MongoDB experience."
+            className="mt-4"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <Button
             onClick={handleGetProfiles}
-            className='mt-4'
+            className="mt-4"
             disabled={isLoading || !description}
           >
             {isLoading ? 'Loading...' : 'Get Profiles'}
@@ -107,9 +110,8 @@ export default function DevProfiles() {
         </>
       ) : (
         <>
-          <h1 className='my-6'>
-            We found {data.candidates.length} profiles that match your
-            search
+          <h1 className="my-6">
+            We found {data.candidates.length} profiles that match your search
           </h1>
           {/* todo: create reusable table component */}
           <Table>
@@ -143,7 +145,7 @@ export default function DevProfiles() {
             onClick={() => {
               setDescription('');
             }}
-            className='mt-4'
+            className="mt-4"
           >
             Try another search
           </Button>
