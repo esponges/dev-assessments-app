@@ -9,6 +9,63 @@ import { Button } from '@/components/ui/button';
 import type { TechStack } from '@/types';
 import { TechStackList } from '@/components/organisms/tech-stack-list';
 
+const testAssessment = [
+  {
+    question_text:
+      'What is a key difference between class and functional components in React?',
+    question_type: 'MULTIPLE_CHOICE',
+    question_topic: 'React',
+    choices: [
+      "Class components have state, functional components don't",
+      "Functional components have state, class components don't",
+      'Class components are written in JavaScript, functional components in TypeScript',
+      "Functional components use render(), class components don't",
+    ],
+    correct_answer: "Class components have state, functional components don't",
+  },
+  {
+    question_text: 'What does redux help you manage in your application?',
+    question_type: 'MULTIPLE_CHOICE',
+    question_topic: 'Redux',
+    choices: [
+      'Server requests',
+      'Database queries',
+      'Application state',
+      'UI Library installation',
+    ],
+    correct_answer: 'Application state',
+  },
+  {
+    question_text: 'What problem does TypeScript solve?',
+    question_type: 'FREE_RESPONSE',
+    question_topic: 'TypeScript',
+    choices: [],
+    correct_answer:
+      'TypeScript adds static types to JavaScript, helping to catch errors early in the development process',
+  },
+  {
+    question_text: 'What is a snapshot test in Jest?',
+    question_type: 'MULTIPLE_CHOICE',
+    question_topic: 'Jest',
+    choices: [
+      'A test that checks if the application state matches a snapshot in time',
+      'A test that checks if the UI matches a stored snapshot',
+      'A test that checks if the UI loads within a specified time',
+      'A test that takes a literal snapshot of the UI state',
+    ],
+    correct_answer: 'A test that checks if the UI matches a stored snapshot',
+  },
+  {
+    question_text: 'What is the primary function of GraphQL?',
+    question_type: 'FREE_RESPONSE',
+    question_topic: 'GraphQL',
+    choices: [],
+    correct_answer:
+      `GraphQL is a specification for how to request and return data from servers to clients. 
+      It provides a more efficient, powerful and flexible alternative to REST`,
+  },
+];
+
 type DevDetails = {
   id: string;
   resume: string;
@@ -23,7 +80,7 @@ type Assessment = {
     question_type: string;
     question_topic: string;
     choices?: string[];
-    correct_answer?: string;
+    correct_answer: string;
   }[];
 };
 
@@ -46,12 +103,17 @@ const getDevDetails = async (id: string) => {
 };
 
 const generateAssessment = async ({ stack }: MutationVariables) => {
+  // see backend code for the actual prompt structure
+  const ASSESSMENT_PROMPT_TYPE = 4;
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/assessment/create`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/create`,
     {
       method: 'POST',
       body: JSON.stringify({
         stack,
+        promptOpt: ASSESSMENT_PROMPT_TYPE,
+        number_of_questions: 10, // hard coded for now
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -63,7 +125,7 @@ const generateAssessment = async ({ stack }: MutationVariables) => {
     throw new Error('Network response was not ok');
   }
 
-  const json = (await res.json()) as Assessment;
+  const json = await res.json();
 
   return json;
 };
@@ -71,7 +133,7 @@ const generateAssessment = async ({ stack }: MutationVariables) => {
 export default function Evaluate() {
   const router = useRouter();
   const { id } = router.query;
-  const [assessment, setAssessment] = useState<Assessment | null>(null);
+  const [assessment, setAssessment] = useState<Assessment | null>();
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // todo: this might be done elsewhere, probably when the page is loaded and the
