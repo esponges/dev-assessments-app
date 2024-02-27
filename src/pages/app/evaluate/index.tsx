@@ -30,7 +30,6 @@ type Assessment = {
 };
 
 type MutationVariables = {
-  id: string;
   stack: TechStack;
 };
 
@@ -47,13 +46,12 @@ const getDevDetails = async (id: string) => {
   return json;
 };
 
-const generateAssessment = async ({ id, stack }: MutationVariables) => {
+const generateAssessment = async ({ stack }: MutationVariables) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/assessment/create`,
     {
       method: 'POST',
       body: JSON.stringify({
-        id,
         stack,
       }),
       headers: {
@@ -101,13 +99,19 @@ export default function Evaluate() {
   }, [data]);
 
   const handleGenerateAssessment = async () => {
+    // don't send 0 experience
+    const nonZeroStack = techStack.filter((el) => el.experience > 0);
+
+    // todo: probably just pick the stack elements with the biggest experience?
+
     if (data) {
-      await generateAssessment({
-        id: data.id,
-        stack: data.detailedTechStack,
+      createAssessment({
+        stack: nonZeroStack,
       });
     }
   };
+
+  console.log('assessment', assessment);
 
   return (
     <Container className='px-6'>
@@ -120,7 +124,12 @@ export default function Evaluate() {
       {techStack.length > 0 ? (
         <TechStackList stack={techStack} setStack={setTechStack} />
       ) : null}
-      <Button onClick={handleGenerateAssessment} className='my-4'>
+      <Button
+        type='submit'
+        className='my-4'
+        onClick={handleGenerateAssessment}
+        disabled={!techStack.length}
+      >
         Generate assessment
       </Button>
       {assessment && <pre>{JSON.stringify(assessment, null, 2)}</pre>}

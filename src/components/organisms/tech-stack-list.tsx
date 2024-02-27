@@ -70,7 +70,7 @@ export function TechStackList({ stack, setStack }: Props) {
                   type='number'
                   id={el.tech}
                   className='max-w-[4rem]'
-                  value={el.experience}
+                  value={el.experience || 0}
                   onChange={(e) =>
                     handleTechStackUpdate(el.tech, Number(e.target.value))
                   }
