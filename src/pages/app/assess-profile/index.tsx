@@ -23,6 +23,7 @@ const parseResume = async (file: File) => {
   };
 
   const formData = new FormData();
+
   formData.append('file', file);
   formData.append('body', JSON.stringify(body));
 
@@ -39,6 +40,7 @@ const parseResume = async (file: File) => {
   }
 
   const json = await res.json();
+
   return json;
 };
 
@@ -59,26 +61,27 @@ export default function AssessProfile() {
   };
 
   return (
-    <Container className='md:w-1/4 w-3/4'>
+    <Container className="md:w-1/4 w-3/4">
       <InputFile
         handleChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            setFile(file);
+          const f = e.target.files?.[0];
+          
+          if (f) {
+            setFile(f);
           }
         }}
-        className='my-4'
-        label='Upload your resume'
+        className="my-4"
+        label="Upload your resume"
       />
-      <Label className='my-4'>{file?.name || ''}</Label>
+      <Label className="my-4">{file?.name || ''}</Label>
       <Alert
-        title='We will analyze your resume'
-        description='This will help us to understand your skills and experience.'
-        className='my-4'
+        title="We will analyze your resume"
+        description="This will help us to understand your skills and experience."
+        className="my-4"
       />
       <Button
         onClick={handleUpload}
-        className='my-4'
+        className="my-4"
         disabled={!file || isPending || !!stack.length}
       >
         {!file
@@ -89,11 +92,14 @@ export default function AssessProfile() {
       </Button>
       {!!stack.length ? (
         <>
-          <TechStackList stack={stack} setStack={setStack} />
+          <TechStackList
+            stack={stack}
+            setStack={setStack}
+          />
           <Alert
-            title='Please confirm the years of experience for each technology'
-            description='In case the years of experience are not accurate, please update the values.'
-            className='my-4'
+            title="Please confirm the years of experience for each technology"
+            description="In case the years of experience are not accurate, please update the values."
+            className="my-4"
           />
           <Button>Confirm</Button>
         </>
