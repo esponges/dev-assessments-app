@@ -5,66 +5,12 @@ import { useEffect, useState } from 'react';
 import { Container } from '@/components/layouts/container';
 import { Alert } from '@/components/molecules/alert';
 import { Button } from '@/components/ui/button';
+import { TechStackList } from '@/components/organisms/tech-stack-list';
+import { Label } from '@/components/ui/label';
 
 import type { TechStack } from '@/types';
-import { TechStackList } from '@/components/organisms/tech-stack-list';
-
-const testAssessment = [
-  {
-    question_text:
-      'What is a key difference between class and functional components in React?',
-    question_type: 'MULTIPLE_CHOICE',
-    question_topic: 'React',
-    choices: [
-      "Class components have state, functional components don't",
-      "Functional components have state, class components don't",
-      'Class components are written in JavaScript, functional components in TypeScript',
-      "Functional components use render(), class components don't",
-    ],
-    correct_answer: "Class components have state, functional components don't",
-  },
-  {
-    question_text: 'What does redux help you manage in your application?',
-    question_type: 'MULTIPLE_CHOICE',
-    question_topic: 'Redux',
-    choices: [
-      'Server requests',
-      'Database queries',
-      'Application state',
-      'UI Library installation',
-    ],
-    correct_answer: 'Application state',
-  },
-  {
-    question_text: 'What problem does TypeScript solve?',
-    question_type: 'FREE_RESPONSE',
-    question_topic: 'TypeScript',
-    choices: [],
-    correct_answer:
-      'TypeScript adds static types to JavaScript, helping to catch errors early in the development process',
-  },
-  {
-    question_text: 'What is a snapshot test in Jest?',
-    question_type: 'MULTIPLE_CHOICE',
-    question_topic: 'Jest',
-    choices: [
-      'A test that checks if the application state matches a snapshot in time',
-      'A test that checks if the UI matches a stored snapshot',
-      'A test that checks if the UI loads within a specified time',
-      'A test that takes a literal snapshot of the UI state',
-    ],
-    correct_answer: 'A test that checks if the UI matches a stored snapshot',
-  },
-  {
-    question_text: 'What is the primary function of GraphQL?',
-    question_type: 'FREE_RESPONSE',
-    question_topic: 'GraphQL',
-    choices: [],
-    correct_answer:
-      `GraphQL is a specification for how to request and return data from servers to clients. 
-      It provides a more efficient, powerful and flexible alternative to REST`,
-  },
-];
+import { Heading } from '@/components/atoms/heading';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 type DevDetails = {
   id: string;
@@ -144,7 +90,7 @@ export default function Evaluate() {
     enabled: !!id,
   });
 
-  const { mutate: createAssessment } = useMutation<
+  const { mutate: createAssessment, isPending } = useMutation<
     Assessment,
     Error,
     MutationVariables
@@ -174,31 +120,62 @@ export default function Evaluate() {
     }
   };
 
-  console.log('assessment', assessment);
-
   return (
     <Container className="px-6">
-      <h1 className="text-2xl font-bold my-4">Your Stack (years)</h1>
-      <Alert
-        className="w-[20rem] my-4"
-        title="Evaluation criteria"
-        description="You will be evaluated based on the following tech stack"
-      />
-      {techStack.length > 0 ? (
-        <TechStackList
-          stack={techStack}
-          setStack={setTechStack}
-        />
-      ) : null}
-      <Button
-        type="submit"
-        className="my-4"
-        onClick={handleGenerateAssessment}
-        disabled={!techStack.length}
-      >
-        Generate assessment
-      </Button>
-      {assessment && <pre>{JSON.stringify(assessment, null, 2)}</pre>}
+      {!assessment ? (
+        <>
+          <Alert
+            className="w-[20rem] my-4"
+            title="Evaluation criteria"
+            description="You will be evaluated based on the following tech stack"
+          />
+          {techStack.length > 0 ? (
+            <TechStackList
+              stack={techStack}
+              setStack={setTechStack}
+            />
+          ) : null}
+          <Button
+            className="mt-10"
+            onClick={handleGenerateAssessment}
+            disabled={!techStack.length || isPending}
+          >
+            {isPending ? 'Generating...' : 'Generate Assessment'}
+          </Button>
+        </>
+      ) : (
+        assessment.questions.map((question, index) => (
+          // todo: abstract this into a component?
+          <form
+            key={index}
+            className="my-4 md:w-3/4 w-full border border-gray-300 p-4 pt-0 rounded-lg"
+          >
+            <Heading variant="h2">{question.question_text}</Heading>
+            {question.question_type === 'MULTIPLE_CHOICE' ? (
+              <RadioGroup>
+                {question.choices?.map((choice, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center space-x-2"
+                  >
+                    <RadioGroupItem
+                      id={choice}
+                      value={choice}
+                    />
+                    <Label htmlFor={choice}>{choice}</Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            ) : (
+              // todo: use embedded editor instead
+              <textarea
+                className="w-full h-24 p-2 border border-gray-300 rounded-lg"
+                placeholder="Type your answer here"
+              />
+            )}
+          </form>
+        ))
+      )}
     </Container>
   );
 }

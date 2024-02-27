@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Heading } from '@/components/atoms/heading';
 
 import type { TechStack } from '@/types';
 
@@ -110,9 +111,9 @@ export default function DevProfiles() {
         </>
       ) : (
         <>
-          <h1 className="my-6">
+          <Heading variant='h1' className="my-6">
             We found {data.candidates.length} profiles that match your search
-          </h1>
+          </Heading>
           {/* todo: create reusable table component */}
           <Table>
             <TableCaption>Profiles</TableCaption>

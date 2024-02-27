@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 
 import type { TechStack } from '@/types';
 import { Button } from '../ui/button';
+import { Heading } from '../atoms/heading';
 
 type Props = {
   stack: TechStack;
@@ -51,23 +52,28 @@ export function TechStackList({ stack, setStack }: Props) {
   };
 
   return (
-    <div className='mx-auto'>
-      <h1 className='text-2xl font-bold my-4'>Your Stack (years)</h1>
+    <div>
+      <Heading
+        variant="h1"
+        className="text-center"
+      >
+        Your Stack (years)
+      </Heading>
       {stack ? (
         // take full width of all these elements
-        <div className='w-full'>
+        <div className="w-full">
           {stack.map((el, i) => (
             <div
               key={el.tech + i}
-              className='grid items-center gap-1.5 my-1 grid-cols-2'
+              className="grid items-center gap-1.5 my-1 grid-cols-2"
             >
               <Label htmlFor={el.tech}>{el.tech}</Label>
               {/* send to the right */}
-              <div className='flex justify-end gap-1.5'>
+              <div className="flex justify-end gap-1.5">
                 <Input
-                  type='number'
+                  type="number"
                   id={el.tech}
-                  className='max-w-[4rem]'
+                  className="max-w-[4rem]"
                   value={el.experience || 0}
                   onChange={(e) =>
                     handleTechStackUpdate(el.tech, Number(e.target.value))
@@ -80,20 +86,29 @@ export function TechStackList({ stack, setStack }: Props) {
         </div>
       ) : null}
       {/* add element */}
-      <h1 className='text-2xl font-bold my-4'>Add new technology</h1>
+      <Heading
+        variant="h1"
+        className="text-center"
+      >
+        Add new technology
+      </Heading>
       <form
         onSubmit={handleAddTech}
-        className='grid items-center gap-1.5 my-1 grid-cols-2'
+        className="grid items-center gap-1.5 my-1 grid-cols-2"
       >
-        <Input type='text' id='tech' placeholder='Technology' />
-        <div className='flex justify-end gap-1.5'>
+        <Input
+          type="text"
+          id="tech"
+          placeholder="Technology"
+        />
+        <div className="flex justify-end gap-1.5">
           <Input
-            type='number'
-            id='experience'
-            placeholder='Years'
-            className='max-w-[4rem]'
+            type="number"
+            id="experience"
+            placeholder="Years"
+            className="max-w-[4rem]"
           />
-          <Button type='submit'>Add</Button>
+          <Button type="submit">Add</Button>
         </div>
       </form>
     </div>
