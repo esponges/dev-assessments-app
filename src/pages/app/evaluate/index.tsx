@@ -23,7 +23,7 @@ type Assessment = {
   title: string;
   questions: {
     id: string;
-    question: string;
+    text: string;
     type: string;
     // question_topic?: string;
     choices?: string[];
@@ -110,7 +110,7 @@ const generateAssessment = async ({
       body: JSON.stringify({
         stack,
         promptOpt: ASSESSMENT_PROMPT_TYPE,
-        number_of_questions: 2, // hard coded for now
+        number_of_questions: 3, // hard coded for now
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -153,10 +153,7 @@ const evaluateQuestions = async (
 export default function Evaluate() {
   const router = useRouter();
   const { id } = router.query;
-  const [assessment, setAssessment] = useState<Assessment | null>({
-    title: 'some assessment',
-    questions: testAssessment,
-  });
+  const [assessment, setAssessment] = useState<Assessment | null>();
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // todo: this might be done elsewhere, probably when the page is loaded and the
@@ -246,7 +243,7 @@ export default function Evaluate() {
       .map((question) => ({
         id: question.id,
         answer: question.selectedAnswer as string,
-        question: question.question,
+        question: question.text,
       }));
 
     // send them to the backend to be graded
@@ -288,7 +285,7 @@ export default function Evaluate() {
               key={index}
               className="my-4 md:w-3/4 w-full border border-gray-300 p-4 pt-0 rounded-lg"
             >
-              <Heading variant="h2">{question.question}</Heading>
+              <Heading variant="h2">{question.text}</Heading>
               {question.type === 'MULTIPLE_CHOICE' ? (
                 <RadioGroup>
                   {question.choices?.map((choice, i) => (
