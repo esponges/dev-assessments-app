@@ -153,15 +153,16 @@ const evaluateQuestions = async (
 export default function Evaluate() {
   const router = useRouter();
   const { id } = router.query;
+  const [candidateId, setCandidateId] = useState<string | null>(id as string);
   const [assessment, setAssessment] = useState<Assessment | null>();
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // todo: this might be done elsewhere, probably when the page is loaded and the
   // candidate is authenticated
   const { data } = useQuery<DevDetails>({
-    queryKey: ['dev', id],
-    queryFn: () => getDevDetails(id as string),
-    enabled: !!id,
+    queryKey: ['candidate', candidateId],
+    queryFn: () => getDevDetails(candidateId || ''),
+    enabled: !!candidateId,
   });
 
   const { mutate: createAssessment, isPending } = useMutation<
@@ -320,6 +321,27 @@ export default function Evaluate() {
           </Button>
         </form>
       )}
+      {/* set candidate id for a different stack */}
+      <Heading variant="h3" className="mt-8">
+        Or evaluate a different candidate
+      </Heading>
+      <form
+        className="flex flex-col items-center space-y-4"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const formData = new FormData(e.target as HTMLFormElement);
+
+          setCandidateId(formData.get('candidateId') as string);
+        }}
+      >
+        <input
+          type="text"
+          name="candidateId"
+          placeholder="Enter candidate id"
+          className="border border-gray-300 p-2 rounded-lg"
+        />
+        <Button type="submit">Get Stack</Button>
+      </form>
     </Container>
   );
 }
