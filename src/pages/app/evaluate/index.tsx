@@ -206,9 +206,23 @@ export default function Evaluate() {
   };
 
   // use the form radio group to handle the selected answer
-  const handleAssessmentSubmit = () => {
-    console.log(assessment);
+  const handleAssessmentSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    // get answers that were correct
+    const correctAnswers = assessment?.questions.filter(
+      (question) => question.selected_answer === question.correct_answer
+    );
+
+    // now get free response answers
+    const freeResponse = assessment?.questions.filter(
+      (question) => question.question_type === 'FREE_RESPONSE'
+    );
+
+    // send them to the backend to be graded
+    console.log(correctAnswers, freeResponse);
   };
+
+  console.log(assessment);
 
   return (
     <Container className="px-6">
