@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { Container } from '@/components/layouts/container';
@@ -72,11 +72,18 @@ const getCandidatesProfiles = async (description: string) => {
 
 export default function DevProfiles() {
   const [description, setDescription] = useState('');
+  const [candidates, setCandidates] = useState<DevProfileResponse['candidates']>();
   const { data, isLoading, refetch } = useQuery<DevProfileResponse>({
     queryKey: ['profiles'],
     queryFn: () => getCandidatesProfiles(description),
     enabled: false,
   });
+
+  useEffect(() => {
+    if (data) {
+      setCandidates(data.candidates);
+    }
+  }, [data]);
 
   const handleGetProfiles = async () => {
     refetch();
@@ -88,7 +95,7 @@ export default function DevProfiles() {
 
   return (
     <Container className="w-full md:w-full md:px-12">
-      {!data || !description ? (
+      {!candidates || !description ? (
         <>
           <Alert
             title="What kind of developer are you looking for?"
@@ -112,7 +119,7 @@ export default function DevProfiles() {
       ) : (
         <>
           <Heading variant='h1' className="my-6">
-            We found {data.candidates.length} profiles that match your search
+            We found {candidates.length} profiles that match your search
           </Heading>
           {/* todo: create reusable table component */}
           <Table>
@@ -126,7 +133,7 @@ export default function DevProfiles() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.candidates.map((candidate) => (
+              {candidates.map((candidate) => (
                 <TableRow key={candidate.id}>
                   <TableCell>{candidate.id}</TableCell>
                   <TableCell>{candidate.score}</TableCell>
@@ -145,6 +152,7 @@ export default function DevProfiles() {
           <Button
             onClick={() => {
               setDescription('');
+              setCandidates(undefined);
             }}
             className="mt-4"
           >
