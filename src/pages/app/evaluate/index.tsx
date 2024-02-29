@@ -32,8 +32,16 @@ type Assessment = {
   }[];
 };
 
-type MutationVariables = {
+type GenerateAssessmentMutationRequest = {
   stack: TechStack;
+};
+
+type EvaluateFreeQuestionsMutationRequest = {
+  questions: {
+    id: string;
+    answer: string;
+    question: string;
+  }[];
 };
 
 const testAssessment = [
@@ -89,7 +97,9 @@ const getDevDetails = async (id: string) => {
   return json;
 };
 
-const generateAssessment = async ({ stack }: MutationVariables) => {
+const generateAssessment = async ({
+  stack,
+}: GenerateAssessmentMutationRequest) => {
   // see backend code for the actual prompt structure
   const ASSESSMENT_PROMPT_TYPE = 4;
 
@@ -102,6 +112,29 @@ const generateAssessment = async ({ stack }: MutationVariables) => {
         promptOpt: ASSESSMENT_PROMPT_TYPE,
         number_of_questions: 2, // hard coded for now
       }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+
+  const json = await res.json();
+
+  return json;
+};
+
+const evaluateQuestions = async (
+  questions: EvaluateFreeQuestionsMutationRequest
+) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/evaluate/questions`,
+    {
+      method: 'POST',
+      body: JSON.stringify(questions),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -137,12 +170,20 @@ export default function Evaluate() {
   const { mutate: createAssessment, isPending } = useMutation<
     Assessment,
     Error,
-    MutationVariables
+    GenerateAssessmentMutationRequest
   >({
     mutationFn: generateAssessment,
     onSuccess: (res) => {
       setAssessment(res);
     },
+  });
+
+  const { mutate: evaluateQuestionsMutation } = useMutation<
+    void,
+    Error,
+    EvaluateFreeQuestionsMutationRequest
+  >({
+    mutationFn: evaluateQuestions,
   });
 
   useEffect(() => {
@@ -204,14 +245,17 @@ export default function Evaluate() {
       .filter((question) => question.type === 'FREE_RESPONSE')
       .map((question) => ({
         id: question.id,
-        answer: question.selectedAnswer,
+        answer: question.selectedAnswer as string,
         question: question.question,
       }));
 
     // send them to the backend to be graded
-    console.log(correctAnswers, freeResponse);
+    if (freeResponse) {
+      evaluateQuestionsMutation({
+        questions: freeResponse,
+      });
+    }
   };
-
 
   return (
     <Container className="px-6">
