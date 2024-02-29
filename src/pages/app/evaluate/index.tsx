@@ -22,12 +22,13 @@ type DevDetails = {
 type Assessment = {
   title: string;
   questions: {
-    question_text: string;
-    question_type: string;
-    question_topic: string;
+    id: string;
+    questionText: string;
+    questionType: string;
+    // question_topic?: string;
     choices?: string[];
-    correct_answer: string;
-    selected_answer?: string;
+    correctAnswer: string;
+    selectedAnswer?: string;
   }[];
 };
 
@@ -37,57 +38,40 @@ type MutationVariables = {
 
 const testAssessment = [
   {
-    question_text:
-      'What is a key difference between class and functional components in React?',
-    question_type: 'MULTIPLE_CHOICE',
-    question_topic: 'React',
-    choices: [
-      "Class components have state, functional components don't",
-      "Functional components have state, class components don't",
-      'Class components are written in JavaScript, functional components in TypeScript',
-      "Functional components use render(), class components don't",
-    ],
-    correct_answer: "Class components have state, functional components don't",
-  },
-  {
-    question_text: 'What does redux help you manage in your application?',
-    question_type: 'MULTIPLE_CHOICE',
-    question_topic: 'Redux',
-    choices: [
-      'Server requests',
-      'Database queries',
-      'Application state',
-      'UI Library installation',
-    ],
-    correct_answer: 'Application state',
-  },
-  {
-    question_text: 'What problem does TypeScript solve?',
-    question_type: 'FREE_RESPONSE',
-    question_topic: 'TypeScript',
+    id: '4711f008-e1b9-45df-8afb-de1c06f7273d',
+    questionText: 'How does React use the Virtual DOM to optimize UI updates?',
+    questionType: 'FREE_RESPONSE',
     choices: [],
-    correct_answer:
-      'TypeScript adds static types to JavaScript, helping to catch errors early in the development process',
+    correctAnswer: '',
+    createdAt: '2024-02-29T01:15:45.684Z',
+    updatedAt: '2024-02-29T01:15:45.684Z',
+    assessmentId: '73614b5b-2157-4dca-905d-a4d8de5e4edc',
   },
   {
-    question_text: 'What is a snapshot test in Jest?',
-    question_type: 'MULTIPLE_CHOICE',
-    question_topic: 'Jest',
-    choices: [
-      'A test that checks if the application state matches a snapshot in time',
-      'A test that checks if the UI matches a stored snapshot',
-      'A test that checks if the UI loads within a specified time',
-      'A test that takes a literal snapshot of the UI state',
-    ],
-    correct_answer: 'A test that checks if the UI matches a stored snapshot',
-  },
-  {
-    question_text: 'What is the primary function of GraphQL?',
-    question_type: 'FREE_RESPONSE',
-    question_topic: 'GraphQL',
+    id: 'e934d3c2-b742-4c19-b533-33ada2648af3',
+    questionText:
+      'In Node.js, how can you implement a child process with spawn method?',
+    questionType: 'FREE_RESPONSE',
     choices: [],
-    correct_answer: `GraphQL is a specification for how to request and return data from servers to clients. 
-      It provides a more efficient, powerful and flexible alternative to REST`,
+    correctAnswer: '',
+    createdAt: '2024-02-29T01:15:45.684Z',
+    updatedAt: '2024-02-29T01:15:45.684Z',
+    assessmentId: '73614b5b-2157-4dca-905d-a4d8de5e4edc',
+  },
+  {
+    id: 'fcf37439-6fcf-4988-9272-67ce536dd75b',
+    questionText: "Explain the concept of 'context' in Go and its usage.",
+    questionType: 'MULTIPLE_CHOICE',
+    choices: [
+      'It is used for storing global variables',
+      'It is used for passing values down the function stack',
+      'It is used for memory management',
+      'None of the above',
+    ],
+    correctAnswer: 'It is used for passing values down the function stack',
+    createdAt: '2024-02-29T01:15:45.684Z',
+    updatedAt: '2024-02-29T01:15:45.684Z',
+    assessmentId: '73614b5b-2157-4dca-905d-a4d8de5e4edc',
   },
 ];
 
@@ -189,10 +173,10 @@ export default function Evaluate() {
         const newQuestions = [...prev.questions];
 
         if (typeof chosenOption === 'number') {
-          newQuestions[questionIdx].selected_answer =
+          newQuestions[questionIdx].selectedAnswer =
             newQuestions[questionIdx].choices?.[chosenOption];
         } else {
-          newQuestions[questionIdx].selected_answer = chosenOption;
+          newQuestions[questionIdx].selectedAnswer = chosenOption;
         }
 
         return {
@@ -206,23 +190,28 @@ export default function Evaluate() {
   };
 
   // use the form radio group to handle the selected answer
-  const handleAssessmentSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleAssessmentSubmit = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
     // get answers that were correct
     const correctAnswers = assessment?.questions.filter(
-      (question) => question.selected_answer === question.correct_answer
+      (question) => question.selectedAnswer === question.correctAnswer
     );
 
     // now get free response answers
-    const freeResponse = assessment?.questions.filter(
-      (question) => question.question_type === 'FREE_RESPONSE'
-    );
+    const freeResponse = assessment?.questions
+      .filter((question) => question.questionType === 'FREE_RESPONSE')
+      .map((question) => ({
+        id: question.id,
+        answer: question.selectedAnswer,
+        questionText: question.questionText,
+      }));
 
     // send them to the backend to be graded
     console.log(correctAnswers, freeResponse);
   };
 
-  console.log(assessment);
 
   return (
     <Container className="px-6">
@@ -255,8 +244,8 @@ export default function Evaluate() {
               key={index}
               className="my-4 md:w-3/4 w-full border border-gray-300 p-4 pt-0 rounded-lg"
             >
-              <Heading variant="h2">{question.question_text}</Heading>
-              {question.question_type === 'MULTIPLE_CHOICE' ? (
+              <Heading variant="h2">{question.questionText}</Heading>
+              {question.questionType === 'MULTIPLE_CHOICE' ? (
                 <RadioGroup>
                   {question.choices?.map((choice, i) => (
                     <div
