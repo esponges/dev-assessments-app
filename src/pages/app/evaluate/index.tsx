@@ -23,8 +23,8 @@ type Assessment = {
   title: string;
   questions: {
     id: string;
-    questionText: string;
-    questionType: string;
+    question: string;
+    type: string;
     // question_topic?: string;
     choices?: string[];
     correctAnswer: string;
@@ -39,8 +39,8 @@ type MutationVariables = {
 const testAssessment = [
   {
     id: '4711f008-e1b9-45df-8afb-de1c06f7273d',
-    questionText: 'How does React use the Virtual DOM to optimize UI updates?',
-    questionType: 'FREE_RESPONSE',
+    question: 'How does React use the Virtual DOM to optimize UI updates?',
+    type: 'FREE_RESPONSE',
     choices: [],
     correctAnswer: '',
     createdAt: '2024-02-29T01:15:45.684Z',
@@ -49,9 +49,9 @@ const testAssessment = [
   },
   {
     id: 'e934d3c2-b742-4c19-b533-33ada2648af3',
-    questionText:
+    question:
       'In Node.js, how can you implement a child process with spawn method?',
-    questionType: 'FREE_RESPONSE',
+    type: 'FREE_RESPONSE',
     choices: [],
     correctAnswer: '',
     createdAt: '2024-02-29T01:15:45.684Z',
@@ -60,8 +60,8 @@ const testAssessment = [
   },
   {
     id: 'fcf37439-6fcf-4988-9272-67ce536dd75b',
-    questionText: "Explain the concept of 'context' in Go and its usage.",
-    questionType: 'MULTIPLE_CHOICE',
+    question: "Explain the concept of 'context' in Go and its usage.",
+    type: 'MULTIPLE_CHOICE',
     choices: [
       'It is used for storing global variables',
       'It is used for passing values down the function stack',
@@ -201,11 +201,11 @@ export default function Evaluate() {
 
     // now get free response answers
     const freeResponse = assessment?.questions
-      .filter((question) => question.questionType === 'FREE_RESPONSE')
+      .filter((question) => question.type === 'FREE_RESPONSE')
       .map((question) => ({
         id: question.id,
         answer: question.selectedAnswer,
-        questionText: question.questionText,
+        question: question.question,
       }));
 
     // send them to the backend to be graded
@@ -244,8 +244,8 @@ export default function Evaluate() {
               key={index}
               className="my-4 md:w-3/4 w-full border border-gray-300 p-4 pt-0 rounded-lg"
             >
-              <Heading variant="h2">{question.questionText}</Heading>
-              {question.questionType === 'MULTIPLE_CHOICE' ? (
+              <Heading variant="h2">{question.question}</Heading>
+              {question.type === 'MULTIPLE_CHOICE' ? (
                 <RadioGroup>
                   {question.choices?.map((choice, i) => (
                     <div
