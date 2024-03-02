@@ -9,7 +9,6 @@ import { TechStackList } from '@/components/organisms/tech-stack-list';
 import { Label } from '@/components/ui/label';
 
 import type { TechStack } from '@/types';
-import type { ClipboardEventHandler, ClipboardEvent } from 'react';
 import { Heading } from '@/components/atoms/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
@@ -28,8 +27,11 @@ type Assessment = {
     type: string;
     // question_topic?: string;
     choices?: string[];
-    correctAnswer: string;
     selectedAnswer?: string;
+    // once evaluated by the backend
+    correctAnswer?: string
+    score?: number;
+    feedbackMessage?: string;
   }[];
 };
 
@@ -37,11 +39,16 @@ type GenerateAssessmentMutationRequest = {
   stack: TechStack;
 };
 
-type EvaluateFreeQuestionsMutationRequest = {
+type EvaluateAssessmentMutationRequest = {
   questions: {
     id: string;
     answer: string;
   }[];
+};
+
+type EvaluateAssessmentMutationResponse = {
+  totalScore: number;
+  evaluatedAssessment: Assessment['questions'];
 };
 
 const testAssessment = [
@@ -127,7 +134,7 @@ const generateAssessment = async ({
 };
 
 const evaluateQuestions = async (
-  questions: EvaluateFreeQuestionsMutationRequest
+  questions: EvaluateAssessmentMutationRequest
 ) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/evaluate/questions`,
@@ -159,7 +166,7 @@ export default function Evaluate() {
   });
   const [techStack, setTechStack] = useState<TechStack>([]);
 
-  // todo: this might be done elsewhere, probably when the page is loaded and the
+  // todo: this probably should be done elsewhere, probably when the page is loaded and the
   // candidate is authenticated
   const { data } = useQuery<DevDetails>({
     queryKey: ['candidate', candidateId],
@@ -179,11 +186,23 @@ export default function Evaluate() {
   });
 
   const { mutate: evaluateQuestionsMutation } = useMutation<
-    void,
+    EvaluateAssessmentMutationResponse,
     Error,
-    EvaluateFreeQuestionsMutationRequest
+    EvaluateAssessmentMutationRequest
   >({
     mutationFn: evaluateQuestions,
+    onSuccess: (res) => {
+      setAssessment((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            questions: res.evaluatedAssessment,
+          };
+        }
+
+        return prev;
+      });
+    }
   });
 
   useEffect(() => {
@@ -195,10 +214,17 @@ export default function Evaluate() {
   useEffect(() => {
     const confirmationMessage = 'Tus cambios se perderán. ¿Estás seguro?';
 
+    // none of these two work - however the default message is ok for now
     const beforeUnloadHandler = (e: WindowEventMap['beforeunload']) => {
       e.returnValue = confirmationMessage;
       return confirmationMessage; // Gecko + Webkit, Safari, Chrome etc.
     };
+
+    window.onbeforeunload = (e: BeforeUnloadEvent) => {
+      e.returnValue = confirmationMessage;
+      return confirmationMessage;
+    };
+
     const beforeRouteHandler = (url: string) => {
       if (router.pathname !== url /* && !confirm(confirmationMessage) */) {
         // handleAssessmentDonePrompt();
@@ -275,6 +301,8 @@ export default function Evaluate() {
   ) => {
     e.preventDefault();
 
+    // todo: prevent submission if not all questions are answered
+
     const questions = assessment?.questions.map((question) => ({
       id: question.id,
       answer: question.selectedAnswer as string,
@@ -286,16 +314,6 @@ export default function Evaluate() {
         questions,
       });
     }
-  };
-
-  const handleCopy = (e: ClipboardEvent<HTMLHeadingElement>) => {
-    e.preventDefault();
-    console.log('copied');
-  };
-
-  const handleSelect: ClipboardEventHandler<HTMLHeadingElement> = (e) => {
-    console.log('selected');
-    e.preventDefault();
   };
 
   return (
@@ -330,8 +348,6 @@ export default function Evaluate() {
               className="my-4 md:w-3/4 w-full border border-gray-300 p-4 pt-0 rounded-lg"
             >
               <Heading
-                onCopy={handleCopy}
-                onSelect={handleSelect}
                 variant="h2"
                 className="disable-highlight"
               >
