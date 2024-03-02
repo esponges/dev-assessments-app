@@ -40,14 +40,13 @@ type EvaluateFreeQuestionsMutationRequest = {
   questions: {
     id: string;
     answer: string;
-    question: string;
   }[];
 };
 
 const testAssessment = [
   {
     id: '4711f008-e1b9-45df-8afb-de1c06f7273d',
-    question: 'How does React use the Virtual DOM to optimize UI updates?',
+    text: 'How does React use the Virtual DOM to optimize UI updates?',
     type: 'FREE_RESPONSE',
     choices: [],
     correctAnswer: '',
@@ -57,7 +56,7 @@ const testAssessment = [
   },
   {
     id: 'e934d3c2-b742-4c19-b533-33ada2648af3',
-    question:
+    text:
       'In Node.js, how can you implement a child process with spawn method?',
     type: 'FREE_RESPONSE',
     choices: [],
@@ -68,7 +67,7 @@ const testAssessment = [
   },
   {
     id: 'fcf37439-6fcf-4988-9272-67ce536dd75b',
-    question: "Explain the concept of 'context' in Go and its usage.",
+    text: "Explain the concept of 'context' in Go and its usage.",
     type: 'MULTIPLE_CHOICE',
     choices: [
       'It is used for storing global variables',
@@ -233,24 +232,16 @@ export default function Evaluate() {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
-    // get answers that were correct
-    const correctAnswers = assessment?.questions.filter(
-      (question) => question.selectedAnswer === question.correctAnswer
-    );
 
-    // now get free response answers
-    const freeResponse = assessment?.questions
-      .filter((question) => question.type === 'FREE_RESPONSE')
-      .map((question) => ({
-        id: question.id,
-        answer: question.selectedAnswer as string,
-        question: question.text,
-      }));
+    const questions = assessment?.questions.map((question) => ({
+      id: question.id,
+      answer: question.selectedAnswer as string,
+    }));
 
     // send them to the backend to be graded
-    if (freeResponse) {
+    if (questions) {
       evaluateQuestionsMutation({
-        questions: freeResponse,
+        questions,
       });
     }
   };
@@ -322,7 +313,10 @@ export default function Evaluate() {
         </form>
       )}
       {/* set candidate id for a different stack */}
-      <Heading variant="h3" className="mt-8">
+      <Heading
+        variant="h3"
+        className="mt-8"
+      >
         Or evaluate a different candidate
       </Heading>
       <form
