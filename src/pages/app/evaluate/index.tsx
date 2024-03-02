@@ -9,6 +9,7 @@ import { TechStackList } from '@/components/organisms/tech-stack-list';
 import { Label } from '@/components/ui/label';
 
 import type { TechStack } from '@/types';
+import type { ClipboardEventHandler, ClipboardEvent } from 'react';
 import { Heading } from '@/components/atoms/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
@@ -56,8 +57,7 @@ const testAssessment = [
   },
   {
     id: 'e934d3c2-b742-4c19-b533-33ada2648af3',
-    text:
-      'In Node.js, how can you implement a child process with spawn method?',
+    text: 'In Node.js, how can you implement a child process with spawn method?',
     type: 'FREE_RESPONSE',
     choices: [],
     correctAnswer: '',
@@ -153,7 +153,10 @@ export default function Evaluate() {
   const router = useRouter();
   const { id } = router.query;
   const [candidateId, setCandidateId] = useState<string | null>(id as string);
-  const [assessment, setAssessment] = useState<Assessment | null>();
+  const [assessment, setAssessment] = useState<Assessment | null>({
+    title: 'Tech Stack Evaluation',
+    questions: testAssessment,
+  });
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // todo: this might be done elsewhere, probably when the page is loaded and the
@@ -246,6 +249,16 @@ export default function Evaluate() {
     }
   };
 
+  const handleCopy = (e: ClipboardEvent<HTMLHeadingElement>) => {
+    e.preventDefault();
+    console.log('copied');
+  };
+
+  const handleSelect: ClipboardEventHandler<HTMLHeadingElement> = (e) => {
+    console.log('selected');
+    e.preventDefault();
+  };
+
   return (
     <Container className="px-6">
       {!assessment ? (
@@ -277,18 +290,26 @@ export default function Evaluate() {
               key={index}
               className="my-4 md:w-3/4 w-full border border-gray-300 p-4 pt-0 rounded-lg"
             >
-              <Heading variant="h2">{question.text}</Heading>
+              <Heading
+                onCopy={handleCopy}
+                onSelect={handleSelect}
+                variant="h2"
+                className="disable-highlight"
+              >
+                {question.text}
+              </Heading>
               {question.type === 'MULTIPLE_CHOICE' ? (
                 <RadioGroup>
                   {question.choices?.map((choice, i) => (
                     <div
                       key={i}
-                      className="flex items-center space-x-2"
+                      className="flex items-center space-x-2 disable-highlight"
                       onChange={() => handleOptionChange(i, index)}
                     >
                       <RadioGroupItem
                         id={choice}
                         value={choice}
+                        className="disable-highlight"
                       />
                       <Label htmlFor={choice}>{choice}</Label>
                     </div>

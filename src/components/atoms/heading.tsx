@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props extends React.HTMLAttributes<HTMLHeadingElement> {
   className?: string;
   variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   children?: React.ReactNode;
-};
+}
 
 export function Heading({ className, variant = 'h1', children }: Props) {
   switch (variant) {
