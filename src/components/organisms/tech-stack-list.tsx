@@ -8,9 +8,10 @@ import { Heading } from '../atoms/heading';
 type Props = {
   stack: TechStack;
   setStack: (stack: TechStack) => void;
+  title?: string;
 };
 
-export function TechStackList({ stack, setStack }: Props) {
+export function TechStackList({ stack, setStack, title }: Props) {
   const handleTechStackUpdate = (key: string, value: number) => {
     const updatedStack =
       value > 0
@@ -52,14 +53,14 @@ export function TechStackList({ stack, setStack }: Props) {
   };
 
   return (
-    <div>
+    <div className='text-center'>
       <Heading
         variant="h1"
         className="text-center"
       >
-        Your Stack (years)
+        {title || 'Your Stack (years)'}
       </Heading>
-      {stack ? (
+      {stack.length > 0 ? (
         // take full width of all these elements
         <div className="w-full">
           {stack.map((el, i) => (
@@ -84,7 +85,7 @@ export function TechStackList({ stack, setStack }: Props) {
             </div>
           ))}
         </div>
-      ) : null}
+      ) : <p>No tech stack detected</p>}
       {/* add element */}
       <Heading
         variant="h1"
@@ -99,14 +100,14 @@ export function TechStackList({ stack, setStack }: Props) {
         <Input
           type="text"
           id="tech"
-          placeholder="Technology"
+          placeholder="Technology/framework"
         />
         <div className="flex justify-end gap-1.5">
           <Input
             type="number"
             id="experience"
             placeholder="Years"
-            className="max-w-[4rem]"
+            className="max-w-[5rem]"
           />
           <Button type="submit">Add</Button>
         </div>

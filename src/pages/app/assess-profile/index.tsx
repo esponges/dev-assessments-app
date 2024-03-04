@@ -47,6 +47,7 @@ const parseResume = async (file: File) => {
 export default function AssessProfile() {
   const [file, setFile] = useState<File | null>(null);
   const [stack, setStack] = useState<TechStack>([]);
+  
   const { mutate, isPending } = useMutation<MutationResponse, Error, File>({
     mutationFn: parseResume,
     onSuccess: (data) => {
