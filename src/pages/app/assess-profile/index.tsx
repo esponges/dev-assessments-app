@@ -28,7 +28,7 @@ const parseResume = async (file: File) => {
   formData.append('body', JSON.stringify(body));
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/candidate/parse_resume`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/candidate/resume/parse`,
     {
       method: 'POST',
       body: formData,

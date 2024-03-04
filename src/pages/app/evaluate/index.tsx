@@ -137,7 +137,7 @@ const evaluateQuestions = async (
   questions: EvaluateAssessmentMutationRequest
 ) => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/evaluate/questions`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/questions/evaluate`,
     {
       method: 'POST',
       body: JSON.stringify(questions),
