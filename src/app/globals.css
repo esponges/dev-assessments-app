@@ -85,3 +85,15 @@
   -ms-user-select: none;
   user-select: none;
 }
+
+/*  monaco editor styles */
+
+.monaco-editor .editor-widget {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.editor {
+	width: 100vw;
+	height: 100vh;
+}

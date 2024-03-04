@@ -8,6 +8,7 @@ import { TechStackList } from '@/components/organisms/tech-stack-list';
 import { Button } from '@/components/ui/button';
 
 import type { Tech, TechStack } from '@/types';
+import { Editor } from '@/components/organisms/editor';
 
 type MutationResponse = {
   challenge: string;
@@ -93,11 +94,18 @@ export default function Challenge() {
         </>
       ) : (
         // todo: use a component that accepts markdown
-        <Alert
-          title="Challenge created"
-          description={`Your challenge is ${challenge}`}
-          className="my-4"
-        />
+        <>
+          <Alert
+            title="Challenge"
+            description={`Your challenge is ${challenge}`}
+            className="my-4 w-[90%] md:w-[80%]"
+          />
+          <Editor
+            value=""
+            language="javascript"
+            onGetContent={(val: string) => alert(val)}
+          />
+        </>
       )}
     </Container>
   );
