@@ -211,51 +211,52 @@ export default function Evaluate() {
     }
   }, [data]);
 
-  useEffect(() => {
-    const confirmationMessage = 'Tus cambios se perderán. ¿Estás seguro?';
+  // todo: will be used to prevent accidental page navigation
+  // useEffect(() => {
+  //   const confirmationMessage = 'Tus cambios se perderán. ¿Estás seguro?';
 
-    // none of these two work - however the default message is ok for now
-    const beforeUnloadHandler = (e: WindowEventMap['beforeunload']) => {
-      e.returnValue = confirmationMessage;
-      return confirmationMessage; // Gecko + Webkit, Safari, Chrome etc.
-    };
+  //   // none of these two work - however the default message is ok for now
+  //   const beforeUnloadHandler = (e: WindowEventMap['beforeunload']) => {
+  //     e.returnValue = confirmationMessage;
+  //     return confirmationMessage; // Gecko + Webkit, Safari, Chrome etc.
+  //   };
 
-    window.onbeforeunload = (e: BeforeUnloadEvent) => {
-      e.returnValue = confirmationMessage;
-      return confirmationMessage;
-    };
+  //   window.onbeforeunload = (e: BeforeUnloadEvent) => {
+  //     e.returnValue = confirmationMessage;
+  //     return confirmationMessage;
+  //   };
 
-    const beforeRouteHandler = (url: string) => {
-      if (router.pathname !== url /* && !confirm(confirmationMessage) */) {
-        // handleAssessmentDonePrompt();
-        // to inform NProgress or something ...
-        router.events.emit('routeChangeError');
-        // to prevent the transition
-        // eslint-disable-next-line no-throw-literal
-        throw `Route change to "${url}" was aborted (this error can be safely ignored). 
-        See https://github.com/zeit/next.js/issues/2476.`;
-      }
-    };
+  //   const beforeRouteHandler = (url: string) => {
+  //     if (router.pathname !== url /* && !confirm(confirmationMessage) */) {
+  //       // handleAssessmentDonePrompt();
+  //       // to inform NProgress or something ...
+  //       router.events.emit('routeChangeError');
+  //       // to prevent the transition
+  //       // eslint-disable-next-line no-throw-literal
+  //       throw `Route change to "${url}" was aborted (this error can be safely ignored). 
+  //       See https://github.com/zeit/next.js/issues/2476.`;
+  //     }
+  //   };
 
-    // if (!isDone.complete) {
-    //   window.addEventListener('beforeunload', beforeUnloadHandler);
-    //   router.events.on('routeChangeStart', beforeRouteHandler);
-    // }
+  //   // if (!isDone.complete) {
+  //   //   window.addEventListener('beforeunload', beforeUnloadHandler);
+  //   //   router.events.on('routeChangeStart', beforeRouteHandler);
+  //   // }
 
-    // // let the user leave the page
-    // if (isDone.complete || leaveIncomplete || assessmentFetchError) {
-    //   window.removeEventListener('beforeunload', beforeUnloadHandler);
-    //   router.events.off('routeChangeStart', beforeRouteHandler);
-    // }
-    window.addEventListener('beforeunload', beforeUnloadHandler);
-    router.events.on('routeChangeStart', beforeRouteHandler);
+  //   // // let the user leave the page
+  //   // if (isDone.complete || leaveIncomplete || assessmentFetchError) {
+  //   //   window.removeEventListener('beforeunload', beforeUnloadHandler);
+  //   //   router.events.off('routeChangeStart', beforeRouteHandler);
+  //   // }
+  //   window.addEventListener('beforeunload', beforeUnloadHandler);
+  //   router.events.on('routeChangeStart', beforeRouteHandler);
 
-    // clean up listener on unmount
-    return () => {
-      window.removeEventListener('beforeunload', beforeUnloadHandler);
-      router.events.off('routeChangeStart', beforeRouteHandler);
-    };
-  }, [router.events, router.pathname]);
+  //   // clean up listener on unmount
+  //   return () => {
+  //     window.removeEventListener('beforeunload', beforeUnloadHandler);
+  //     router.events.off('routeChangeStart', beforeRouteHandler);
+  //   };
+  // }, [router.events, router.pathname]);
 
   const handleGenerateAssessment = async () => {
     // don't send 0 experience
@@ -302,7 +303,6 @@ export default function Evaluate() {
     e.preventDefault();
 
     // todo: prevent submission if not all questions are answered
-
     const questions = assessment?.questions.map((question) => ({
       id: question.id,
       answer: question.selectedAnswer as string,
