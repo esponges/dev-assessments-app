@@ -103,7 +103,7 @@ export default function Challenge() {
           <Editor
             value=""
             language="javascript"
-            onGetContent={(val: string) => alert(val)}
+            onContentSave={(val: string) => console.log(val)}
           />
         </>
       )}

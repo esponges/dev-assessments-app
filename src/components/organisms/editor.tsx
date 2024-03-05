@@ -2,15 +2,16 @@ import { useRef, useState } from 'react';
 import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type { EditorProps, Monaco } from '@monaco-editor/react';
 import { Editor as MonacoEditor } from '@monaco-editor/react';
+
 import { Button } from '../ui/button';
 
 type Props = EditorProps & {
   value: string;
   language: string;
-  onGetContent: (value: string) => void;
+  onContentSave: (value: string) => void;
 };
 
-export const Editor = ({ value, ...props }: Props) => {
+export const Editor = ({ value, onContentSave, ...props }: Props) => {
   const [language, setLanguage] = useState('javascript');
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
@@ -27,13 +28,14 @@ export const Editor = ({ value, ...props }: Props) => {
     }
   };
 
-  const onGetContent = (content: string) => {
-    props.onGetContent(content);
+  const handleChange = (content: string|undefined) => {
+    if (!content) return;
+    onContentSave(content);
   };
 
   return (
     <>
-      <div className="editor">
+      <div className="editor md:w-[80%] text-center">
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
@@ -51,10 +53,16 @@ export const Editor = ({ value, ...props }: Props) => {
           theme="vs-dark"
           defaultLanguage="typescript"
           language={language}
-          defaultValue="// some comment"
+          defaultValue={value || '// some comment'}
           onMount={handleEditorDidMount}
+          onChange={handleChange}
         />
-        <Button className="mx-auto my-4" onClick={showValue}>CTA</Button>
+        <Button
+          className="mx-auto my-4"
+          onClick={showValue}
+        >
+          CTA
+        </Button>
       </div>
     </>
   );
