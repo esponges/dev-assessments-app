@@ -52,6 +52,9 @@ const evaluateChallenge = async ({
     {
       method: 'POST',
       body: JSON.stringify({ devResponse, challenge }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     }
   );
 

@@ -37,7 +37,7 @@ export const Editor = ({
     onContentSave(content);
   };
 
-  const handleSumit = () => {
+  const handleSubmit = () => {
     if (onSubmit && editorRef.current?.getValue()) {
       onSubmit(editorRef.current?.getValue());
     } else {
@@ -71,7 +71,7 @@ export const Editor = ({
         />
         <Button
           className="mx-auto my-4"
-          onClick={handleSumit}
+          onClick={handleSubmit}
           disabled={isLoading}
         >
           {CTALabel || 'Save'}
