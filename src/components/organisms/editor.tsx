@@ -6,12 +6,22 @@ import { Editor as MonacoEditor } from '@monaco-editor/react';
 import { Button } from '../ui/button';
 
 type Props = EditorProps & {
-  value: string;
+  value?: string;
   language: string;
-  onContentSave: (value: string) => void;
+  isLoading?: boolean;
+  CTALabel?: string;
+  onContentSave?: (value: string) => void;
+  onSubmit?: (value: string) => void;
 };
 
-export const Editor = ({ value, onContentSave, ...props }: Props) => {
+export const Editor = ({
+  value,
+  onContentSave,
+  isLoading,
+  CTALabel,
+  onSubmit,
+  ...props
+}: Props) => {
   const [language, setLanguage] = useState('javascript');
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
@@ -22,15 +32,17 @@ export const Editor = ({ value, onContentSave, ...props }: Props) => {
     editorRef.current = editor;
   };
 
-  const showValue = () => {
-    if (editorRef.current) {
-      alert(editorRef.current.getValue());
-    }
+  const handleChange = (content: string | undefined) => {
+    if (!content || !onContentSave) return;
+    onContentSave(content);
   };
 
-  const handleChange = (content: string|undefined) => {
-    if (!content) return;
-    onContentSave(content);
+  const handleSumit = () => {
+    if (onSubmit && editorRef.current?.getValue()) {
+      onSubmit(editorRef.current?.getValue());
+    } else {
+      alert('No content to submit');
+    }
   };
 
   return (
@@ -53,15 +65,16 @@ export const Editor = ({ value, onContentSave, ...props }: Props) => {
           theme="vs-dark"
           defaultLanguage="typescript"
           language={language}
-          defaultValue={value || '// some comment'}
+          defaultValue={value || '// please type your code here'}
           onMount={handleEditorDidMount}
           onChange={handleChange}
         />
         <Button
           className="mx-auto my-4"
-          onClick={showValue}
+          onClick={handleSumit}
+          disabled={isLoading}
         >
-          CTA
+          {CTALabel || 'Save'}
         </Button>
       </div>
     </>
