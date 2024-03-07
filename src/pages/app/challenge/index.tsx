@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 
 import { Heading } from '@/components/atoms/heading';
@@ -87,6 +87,8 @@ const MOCKED_TECH_STACK: TechStack = [
 export default function Challenge() {
   const [techStack, setTechStack] = useState<TechStack>(MOCKED_TECH_STACK);
   const [challenge, setChallenge] = useState<string>(MOCKED_CHALLENGE);
+  const [evaluation, setEvaluation] =
+    useState<EvaluateMutationResponse | null>();
 
   const { mutate, isPending } = useMutation<
     CreateMutationResponse,
@@ -106,27 +108,29 @@ export default function Challenge() {
   >({
     mutationFn: evaluateChallenge,
     onSuccess: (data) => {
-      console.log(data);
+      setEvaluation(data);
     },
   });
 
-  const handleCreateChallenge = async () => {
+  const handleCreateChallenge = useCallback(async () => {
     if (techStack.length > 0) {
       mutate(techStack[0]);
     } else {
       // todo: use a toast or a modal
       alert('Please choose a technology');
     }
-  };
+  }, [mutate, techStack]);
 
-  const handleEvaluateChallenge = async (code: string) => {
-    evaluate({ devResponse: code, challenge });
-  };
+  const handleEvaluateChallenge = useCallback(
+    async (code: string) => {
+      evaluate({ devResponse: code, challenge });
+    },
+    [evaluate, challenge]
+  );
 
-  return (
-    <Container>
-      <Heading variant="h1">Code Challenge</Heading>
-      {!challenge ? (
+  const content = useMemo(() => {
+    if (!challenge) {
+      return (
         <>
           <Alert
             className="w-[20rem] my-4 disable-highlight"
@@ -146,8 +150,9 @@ export default function Challenge() {
             {isPending ? 'Loading...' : 'Create Challenge'}
           </Button>
         </>
-      ) : (
-        // todo: use a component that accepts markdown instead of the Alert component
+      );
+    } else if (challenge && !evaluation) {
+      return (
         <>
           <Alert
             title="Challenge"
@@ -161,7 +166,34 @@ export default function Challenge() {
             onSubmit={handleEvaluateChallenge}
           />
         </>
-      )}
+      );
+    } else if (evaluation) {
+      /* return all the evaluation scores in a list */
+      return (
+        <ul>
+          <li>Code Quality: {evaluation.code_quality}</li>
+          <li>Code Correctness: {evaluation.code_correctness}</li>
+          <li>Code Efficiency: {evaluation.code_efficiency}</li>
+          <li>Code Maintainability: {evaluation.code_maintainability}</li>
+          <li>Feedback Message: {evaluation.feedback_message}</li>
+        </ul>
+      );
+    }
+    return null;
+  }, [
+    challenge,
+    evaluation,
+    isEvaluating,
+    isPending,
+    techStack,
+    handleCreateChallenge,
+    handleEvaluateChallenge,
+  ]);
+
+  return (
+    <Container>
+      <Heading variant="h1">Code Challenge</Heading>
+      {content}
     </Container>
   );
 }
