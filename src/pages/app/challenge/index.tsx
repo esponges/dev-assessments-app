@@ -84,11 +84,25 @@ const MOCKED_TECH_STACK: TechStack = [
   },
 ];
 
+const MOCKED_EVALUATION: EvaluateMutationResponse = {
+  code_quality: 95,
+  code_correctness: 100,
+  code_efficiency: 90,
+  code_maintainability: 90,
+  feedback_message: `Your solution is excellent, demonstrating a strong understanding of 
+    Higher Order Components and dynamic styling. The code is clean, well-structured, 
+    following best practices such as destructuring props and usage of typescript types. 
+    However, consider adding comments to your code for improved readability and 
+    maintainability. Furthermore, you could think about strategies for managing 
+    themes more efficiently when the number of themes grows.`,
+};
+
 export default function Challenge() {
   const [techStack, setTechStack] = useState<TechStack>(MOCKED_TECH_STACK);
   const [challenge, setChallenge] = useState<string>(MOCKED_CHALLENGE);
-  const [evaluation, setEvaluation] =
-    useState<EvaluateMutationResponse | null>();
+  const [evaluation, setEvaluation] = useState<EvaluateMutationResponse | null>(
+    MOCKED_EVALUATION
+  );
 
   const { mutate, isPending } = useMutation<
     CreateMutationResponse,
@@ -170,12 +184,17 @@ export default function Challenge() {
         );
       case !!evaluation:
         return (
-          <ul>
-            <li>Code Quality: {evaluation.code_quality}</li>
-            <li>Code Correctness: {evaluation.code_correctness}</li>
-            <li>Code Efficiency: {evaluation.code_efficiency}</li>
-            <li>Code Maintainability: {evaluation.code_maintainability}</li>
-            <li>Feedback Message: {evaluation.feedback_message}</li>
+          <ul className="w-3/4">
+            <Heading variant="h4">Code Quality</Heading>
+            <p>{evaluation.code_quality}</p>
+            <Heading variant="h4">Code Correctness</Heading>
+            <p>{evaluation.code_correctness}</p>
+            <Heading variant="h4">Code Efficiency</Heading>
+            <p>{evaluation.code_efficiency}</p>
+            <Heading variant="h4">Code Maintainability</Heading>
+            <p>{evaluation.code_maintainability}</p>
+            <Heading variant="h4">Feedback Message</Heading>
+            <p>{evaluation.feedback_message}</p>
           </ul>
         );
       default:
@@ -193,7 +212,11 @@ export default function Challenge() {
 
   return (
     <Container>
-      <Heading variant="h1">Code Challenge</Heading>
+      {!evaluation ? (
+        <Heading variant="h1">Code Challenge</Heading>
+      ) : (
+        <Heading variant="h2">Evaluation Results</Heading>
+      )}
       {content}
     </Container>
   );
