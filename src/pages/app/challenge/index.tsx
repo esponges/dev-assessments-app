@@ -129,57 +129,58 @@ export default function Challenge() {
   );
 
   const content = useMemo(() => {
-    if (!challenge) {
-      return (
-        <>
-          <Alert
-            className="w-[20rem] my-4 disable-highlight"
-            title="Please choose one technology from your tech stack"
-            description="You will be given a code challenge based on the technology you choose"
-          />
-          {/* todo: force this component to use X number of stacks */}
-          <TechStackList
-            stack={techStack}
-            setStack={setTechStack}
-          />
-          <Button
-            className="my-4"
-            onClick={handleCreateChallenge}
-            disabled={isPending}
-          >
-            {isPending ? 'Loading...' : 'Create Challenge'}
-          </Button>
-        </>
-      );
-    } else if (challenge && !evaluation) {
-      return (
-        <>
-          <Alert
-            title="Challenge"
-            description={`Your challenge is ${challenge}`}
-            className="my-4 w-[90%] md:w-[80%]"
-          />
-          <Editor
-            value=""
-            language="javascript"
-            isLoading={isEvaluating}
-            onSubmit={handleEvaluateChallenge}
-          />
-        </>
-      );
-    } else if (evaluation) {
-      /* return all the evaluation scores in a list */
-      return (
-        <ul>
-          <li>Code Quality: {evaluation.code_quality}</li>
-          <li>Code Correctness: {evaluation.code_correctness}</li>
-          <li>Code Efficiency: {evaluation.code_efficiency}</li>
-          <li>Code Maintainability: {evaluation.code_maintainability}</li>
-          <li>Feedback Message: {evaluation.feedback_message}</li>
-        </ul>
-      );
+    switch (true) {
+      case !challenge:
+        return (
+          <>
+            <Alert
+              className="w-[20rem] my-4 disable-highlight"
+              title="Please choose one technology from your tech stack"
+              description="You will be given a code challenge based on the technology you choose"
+            />
+            {/* todo: force this component to use X number of stacks */}
+            <TechStackList
+              stack={techStack}
+              setStack={setTechStack}
+            />
+            <Button
+              className="my-4"
+              onClick={handleCreateChallenge}
+              disabled={isPending}
+            >
+              {isPending ? 'Loading...' : 'Create Challenge'}
+            </Button>
+          </>
+        );
+      case challenge && !evaluation:
+        return (
+          <>
+            <Alert
+              title="Challenge"
+              description={`Your challenge is ${challenge}`}
+              className="my-4 w-[90%] md:w-[80%]"
+            />
+            <Editor
+              value=""
+              language="javascript"
+              isLoading={isEvaluating}
+              onSubmit={handleEvaluateChallenge}
+            />
+          </>
+        );
+      case !!evaluation:
+        return (
+          <ul>
+            <li>Code Quality: {evaluation.code_quality}</li>
+            <li>Code Correctness: {evaluation.code_correctness}</li>
+            <li>Code Efficiency: {evaluation.code_efficiency}</li>
+            <li>Code Maintainability: {evaluation.code_maintainability}</li>
+            <li>Feedback Message: {evaluation.feedback_message}</li>
+          </ul>
+        );
+      default:
+        return null;
     }
-    return null;
   }, [
     challenge,
     evaluation,
