@@ -100,9 +100,8 @@ const MOCKED_EVALUATION: EvaluateMutationResponse = {
 export default function Challenge() {
   const [techStack, setTechStack] = useState<TechStack>(MOCKED_TECH_STACK);
   const [challenge, setChallenge] = useState<string>(MOCKED_CHALLENGE);
-  const [evaluation, setEvaluation] = useState<EvaluateMutationResponse | null>(
-    MOCKED_EVALUATION
-  );
+  const [evaluation, setEvaluation] =
+    useState<EvaluateMutationResponse | null>();
 
   const { mutate, isPending } = useMutation<
     CreateMutationResponse,
@@ -148,7 +147,7 @@ export default function Challenge() {
         return (
           <>
             <Alert
-              className="w-[20rem] my-4 disable-highlight"
+              className="w-[20rem] my-4"
               title="Please choose one technology from your tech stack"
               description="You will be given a code challenge based on the technology you choose"
             />
@@ -173,6 +172,7 @@ export default function Challenge() {
               title="Challenge"
               description={`Your challenge is ${challenge}`}
               className="my-4 w-[90%] md:w-[80%]"
+              disabledElements={{ description: true }}
             />
             <Editor
               value=""

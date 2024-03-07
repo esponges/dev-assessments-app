@@ -9,13 +9,26 @@ type Props = {
   title: string;
   description: string;
   className?: string;
+  disabledElements?: {
+    title?: boolean;
+    description?: boolean;
+  };
 };
 
-export function Alert({ title, description, className }: Props) {
+export function Alert({
+  title,
+  description,
+  className,
+  disabledElements,
+}: Props) {
   return (
     <ShadcnAlert className={cn(className)}>
       <AlertTitle>{title}</AlertTitle>
-      <AlertDescription>{description}</AlertDescription>
+      <AlertDescription
+        className={cn(disabledElements?.description ? 'disable-highlight' : '')}
+      >
+        {description}
+      </AlertDescription>
     </ShadcnAlert>
   );
 }
