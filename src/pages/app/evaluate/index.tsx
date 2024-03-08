@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Container } from '@/components/layouts/container';
 import { Alert } from '@/components/molecules/alert';
@@ -12,6 +12,7 @@ import type { TechStack } from '@/types';
 import { Heading } from '@/components/atoms/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Editor } from '@/components/organisms/editor';
+import { cn } from '@/lib/utils';
 
 type DevDetails = {
   id: string;
@@ -163,6 +164,11 @@ export default function Evaluate() {
   const router = useRouter();
   const { id } = router.query;
   const [candidateId, setCandidateId] = useState<string | null>(id as string);
+  const [timeLeft, setTimeLeft] = useState({
+    initial: 1800,
+    current: 1800,
+    startedAt: Date.now(),
+  }); // 30 minutes - hard coded for now
   const [assessment, setAssessment] = useState<Assessment | null>({
     title: 'Tech Stack Evaluation',
     questions: testAssessment,
@@ -213,6 +219,23 @@ export default function Evaluate() {
       setTechStack(data.detailedTechStack);
     }
   }, [data]);
+
+  // reduce time left every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        const elapsedTime = Date.now() - prev.startedAt;
+        const newTimeLeft = prev.initial - Math.floor(elapsedTime / 1000);
+
+        return {
+          ...prev,
+          current: newTimeLeft,
+        };
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeLeft.initial, timeLeft.startedAt]);
 
   // todo: will be used to prevent accidental page navigation
   // useEffect(() => {
@@ -369,6 +392,19 @@ export default function Evaluate() {
     );
   };
 
+  const answeredQuestions = useMemo(
+    () =>
+      assessment?.questions.filter((question) => !!question.selectedAnswer) ||
+      [],
+    [assessment]
+  );
+
+  const currentTimeLeftMessage = timeLeft.current > 0
+  ? `${Math.floor(timeLeft.current / 60)}:${
+      timeLeft.current % 60 < 10 ? '0' : ''
+    }${timeLeft.current % 60} left`
+  : 'Time is up';
+
   return (
     <Container className="px-6">
       {!assessment ? (
@@ -396,6 +432,22 @@ export default function Evaluate() {
         </>
       ) : (
         <form className="flex flex-col items-center space-y-8">
+          <div
+            className={cn(`
+              sticky top-0 left-0 text-white font-semibold bg-green-500 p-4 rounded-md shadow-lg
+              ${timeLeft.current < 300 ? 'bg-red-400' : ''}
+            `)}
+          >
+            <div>
+              Progress:{' '}
+              <span>
+                {answeredQuestions.length}/{assessment.questions.length}
+              </span>
+            </div>
+            <div className="ml-auto mr-0 flex items-center">
+              {currentTimeLeftMessage}
+            </div>
+          </div>
           {assessment.questions.map((question, index) => (
             // todo: abstract this into a component?
             <div
