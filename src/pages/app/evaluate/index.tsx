@@ -306,8 +306,6 @@ export default function Evaluate() {
 
         newQuestions[idx].inputType = type;
 
-        console.log(newQuestions);
-
         return {
           ...prev,
           questions: newQuestions,
@@ -363,7 +361,10 @@ export default function Evaluate() {
             value=""
             language="javascript"
             onChange={(value) => handleOptionChange(value || '', 0)}
-            height="10vh"
+            height="10rem"
+            classNames={{
+              main: 'md:w-full',
+            }}
           />
         )}
       </div>

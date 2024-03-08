@@ -4,6 +4,7 @@ import type { EditorProps, Monaco } from '@monaco-editor/react';
 import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 type Props = EditorProps & {
   value?: string;
@@ -12,6 +13,12 @@ type Props = EditorProps & {
   CTALabel?: string;
   onContentSave?: (value: string) => void;
   onSubmit?: (value: string) => void;
+  height?: string;
+  classNames?: {
+    main?: string;
+    editor?: string;
+    button?: string;
+  };
 };
 
 export const Editor = ({
@@ -20,6 +27,8 @@ export const Editor = ({
   isLoading,
   CTALabel,
   onSubmit,
+  height,
+  classNames,
   ...props
 }: Props) => {
   const [language, setLanguage] = useState('javascript');
@@ -47,7 +56,7 @@ export const Editor = ({
 
   return (
     <>
-      <div className="editor md:w-[80%] text-center">
+      <div className={cn('editor md:w-[80%] text-center', classNames?.main)}>
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
@@ -61,7 +70,7 @@ export const Editor = ({
         </select>
         <MonacoEditor
           {...props}
-          height="90vh"
+          height={height || '70vh'}
           theme="vs-dark"
           defaultLanguage="typescript"
           language={language}
@@ -69,13 +78,15 @@ export const Editor = ({
           onMount={handleEditorDidMount}
           onChange={handleChange}
         />
-        <Button
-          className="mx-auto my-4"
-          onClick={handleSubmit}
-          disabled={isLoading}
-        >
-          {CTALabel || 'Save'}
-        </Button>
+        {CTALabel ? (
+          <Button
+            className="mx-auto my-4"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
+            {CTALabel}
+          </Button>
+        ) : null}
       </div>
     </>
   );
