@@ -339,17 +339,6 @@ export default function Evaluate() {
   const renderFreeResponse = (type: 'text' | 'code', idx: number) => {
     return (
       <div>
-        {/* toggle TYPE WITH BUTTON */}
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            handleInputTypeChange(type === 'text' ? 'code' : 'text', idx);
-          }
-          }
-          className="text-blue-500 underline"
-        >
-          {type === 'text' ? 'Switch to code' : 'Switch to text'}
-        </button>
         {type === 'text' ? (
           <textarea
             onChange={(e) => handleOptionChange(e.target.value, 0)}
@@ -367,6 +356,15 @@ export default function Evaluate() {
             }}
           />
         )}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            handleInputTypeChange(type === 'text' ? 'code' : 'text', idx);
+          }}
+          className="text-blue-500 text-xs underline"
+        >
+          {type === 'text' ? 'Switch to code' : 'Switch to text'}
+        </button>
       </div>
     );
   };

@@ -21,6 +21,21 @@ type Props = EditorProps & {
   };
 };
 
+const EDITOR_LANGUAGES = [
+  { label: 'JavaScript', value: 'javascript' },
+  { label: 'TypeScript', value: 'typescript' },
+  { label: 'Python', value: 'python' },
+  { label: 'Java', value: 'java' },
+  { label: 'C#', value: 'csharp' },
+  { label: 'Go', value: 'go' },
+  { label: 'Ruby', value: 'ruby' },
+  { label: 'Rust', value: 'rust' },
+  { label: 'Kotlin', value: 'kotlin' },
+  { label: 'Swift', value: 'swift'},
+  { label: 'bash', value: 'bash' },
+  // more...
+];
+
 export const Editor = ({
   value,
   onContentSave,
@@ -56,17 +71,17 @@ export const Editor = ({
 
   return (
     <>
-      <div className={cn('editor md:w-[80%] text-center', classNames?.main)}>
+      <div className={cn('editor md:w-[80%]', classNames?.main)}>
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
+          className="m-1"
         >
-          <option value="javascript">JavaScript</option>
-          <option value="typescript">TypeScript</option>
-          <option value="python">Python</option>
-          <option value="java">Java</option>
-          <option value="csharp">C#</option>
-          <option value="go">Go</option>
+          {EDITOR_LANGUAGES.map((lang) => (
+            <option key={lang.value} value={lang.value}>
+              {lang.label}
+            </option>
+          ))}
         </select>
         <MonacoEditor
           {...props}
