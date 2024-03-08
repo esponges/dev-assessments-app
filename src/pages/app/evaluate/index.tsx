@@ -29,7 +29,7 @@ type Assessment = {
     choices?: string[];
     selectedAnswer?: string;
     // once evaluated by the backend
-    correctAnswer?: string
+    correctAnswer?: string;
     score?: number;
     feedbackMessage?: string;
   }[];
@@ -202,7 +202,7 @@ export default function Evaluate() {
 
         return prev;
       });
-    }
+    },
   });
 
   useEffect(() => {
@@ -233,7 +233,7 @@ export default function Evaluate() {
   //       router.events.emit('routeChangeError');
   //       // to prevent the transition
   //       // eslint-disable-next-line no-throw-literal
-  //       throw `Route change to "${url}" was aborted (this error can be safely ignored). 
+  //       throw `Route change to "${url}" was aborted (this error can be safely ignored).
   //       See https://github.com/zeit/next.js/issues/2476.`;
   //     }
   //   };
@@ -321,7 +321,9 @@ export default function Evaluate() {
       {!assessment ? (
         <>
           <Alert
-            className="w-[20rem] my-4"
+            classNames={{
+              main: 'w-[20rem] my-4',
+            }}
             title="Evaluation criteria"
             description="You will be evaluated based on the following tech stack"
           />

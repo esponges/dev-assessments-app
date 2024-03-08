@@ -66,7 +66,7 @@ export default function AssessProfile() {
       <InputFile
         handleChange={(e) => {
           const f = e.target.files?.[0];
-          
+
           if (f) {
             setFile(f);
           }
@@ -78,7 +78,11 @@ export default function AssessProfile() {
       <Alert
         title="We will analyze your resume"
         description="This will help us to understand your skills and experience."
-        className="my-4"
+        classNames={{
+          main: 'my-4',
+          title: 'text-lg',
+          description: 'text-sm',
+        }}
       />
       <Button
         onClick={handleUpload}
@@ -100,7 +104,11 @@ export default function AssessProfile() {
           <Alert
             title="Please confirm the years of experience for each technology"
             description="In case the years of experience are not accurate, please update the values."
-            className="my-4"
+            classNames={{
+              main: 'my-4',
+              title: 'text-lg',
+              description: 'text-sm',
+            }}
           />
           <Button>Confirm</Button>
         </>

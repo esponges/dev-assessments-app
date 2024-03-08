@@ -8,25 +8,18 @@ import { cn } from '@/lib/utils';
 type Props = {
   title: string;
   description: string;
-  className?: string;
-  disabledElements?: {
-    title?: boolean;
-    description?: boolean;
+  classNames?: {
+    main?: string;
+    title?: string;
+    description?: string;
   };
 };
 
-export function Alert({
-  title,
-  description,
-  className,
-  disabledElements,
-}: Props) {
+export function Alert({ title, description, classNames }: Props) {
   return (
-    <ShadcnAlert className={cn(className)}>
-      <AlertTitle>{title}</AlertTitle>
-      <AlertDescription
-        className={cn(disabledElements?.description ? 'disable-highlight' : '')}
-      >
+    <ShadcnAlert className={cn(classNames?.main)}>
+      <AlertTitle className={cn(classNames?.title)}>{title}</AlertTitle>
+      <AlertDescription className={cn(classNames?.description)}>
         {description}
       </AlertDescription>
     </ShadcnAlert>

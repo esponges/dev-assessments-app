@@ -147,7 +147,7 @@ export default function Challenge() {
         return (
           <>
             <Alert
-              className="w-[20rem] my-4"
+              classNames={{ main: 'w-[20rem] my-4' }}
               title="Please choose one technology from your tech stack"
               description="You will be given a code challenge based on the technology you choose"
             />
@@ -171,8 +171,10 @@ export default function Challenge() {
             <Alert
               title="Challenge"
               description={`Your challenge is ${challenge}`}
-              className="my-4 w-[90%] md:w-[80%]"
-              disabledElements={{ description: true }}
+              classNames={{
+                main: ' my-4 w-[90%] md:w-[80%]',
+                description: 'disabled-highlight',
+              }}
             />
             <Editor
               value=""
