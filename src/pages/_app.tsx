@@ -1,8 +1,7 @@
 import type { AppProps } from 'next/app';
-import {
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Provider } from 'react-redux';
+import { store } from '@/store';
 
 import { Navigation } from '@/components/layouts/pages/navigation';
 import { ShadcnWrapper } from '@/components/layouts/pages/shadcn-wrapper';
@@ -36,7 +35,9 @@ export default function App({ Component, pageProps }: Props) {
 
   return getLayout(
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      <Provider store={store}>
+        <Component {...pageProps} />
+      </Provider>
     </QueryClientProvider>
   );
 }
