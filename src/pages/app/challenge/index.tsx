@@ -173,7 +173,7 @@ export default function Challenge() {
               description={`Your challenge is ${challenge}`}
               classNames={{
                 main: ' my-4 w-[90%] md:w-[80%]',
-                description: 'disabled-highlight',
+                description: 'disable-highlight',
               }}
             />
             <Editor

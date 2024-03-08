@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import type { TechStack } from '@/types';
 import { Heading } from '@/components/atoms/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Editor } from '@/components/organisms/editor';
 
 type DevDetails = {
   id: string;
@@ -32,6 +33,7 @@ type Assessment = {
     correctAnswer?: string;
     score?: number;
     feedbackMessage?: string;
+    inputType?: 'text' | 'code';
   }[];
 };
 
@@ -61,6 +63,7 @@ const testAssessment = [
     createdAt: '2024-02-29T01:15:45.684Z',
     updatedAt: '2024-02-29T01:15:45.684Z',
     assessmentId: '73614b5b-2157-4dca-905d-a4d8de5e4edc',
+    // inputType: 'code',
   },
   {
     id: 'e934d3c2-b742-4c19-b533-33ada2648af3',
@@ -296,6 +299,25 @@ export default function Evaluate() {
     });
   };
 
+  const handleInputTypeChange = (type: 'text' | 'code', idx: number) => {
+    setAssessment((prev) => {
+      if (prev) {
+        const newQuestions = [...prev.questions];
+
+        newQuestions[idx].inputType = type;
+
+        console.log(newQuestions);
+
+        return {
+          ...prev,
+          questions: newQuestions,
+        };
+      }
+
+      return prev;
+    });
+  };
+
   // use the form radio group to handle the selected answer
   const handleAssessmentSubmit = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -314,6 +336,38 @@ export default function Evaluate() {
         questions,
       });
     }
+  };
+
+  const renderFreeResponse = (type: 'text' | 'code', idx: number) => {
+    return (
+      <div>
+        {/* toggle TYPE WITH BUTTON */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            handleInputTypeChange(type === 'text' ? 'code' : 'text', idx);
+          }
+          }
+          className="text-blue-500 underline"
+        >
+          {type === 'text' ? 'Switch to code' : 'Switch to text'}
+        </button>
+        {type === 'text' ? (
+          <textarea
+            onChange={(e) => handleOptionChange(e.target.value, 0)}
+            className="w-full h-24 p-2 border border-gray-300 rounded-lg"
+            placeholder={`Type your ${type} answer here`}
+          />
+        ) : (
+          <Editor
+            value=""
+            language="javascript"
+            onChange={(value) => handleOptionChange(value || '', 0)}
+            height="10vh"
+          />
+        )}
+      </div>
+    );
   };
 
   return (
@@ -373,12 +427,7 @@ export default function Evaluate() {
                   ))}
                 </RadioGroup>
               ) : (
-                // todo: use embedded editor instead
-                <textarea
-                  onChange={(e) => handleOptionChange(e.target.value, index)}
-                  className="w-full h-24 p-2 border border-gray-300 rounded-lg"
-                  placeholder="Type your answer here"
-                />
+                renderFreeResponse(question.inputType || 'text', index)
               )}
             </div>
           ))}
