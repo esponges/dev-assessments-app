@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import './globals.css';
+
 import { cn } from '@/lib/utils';
 import { Navigation } from '@/components/layouts/pages/navigation';
 import { Providers } from '@/app/providers';
+
+import './globals.css';
 
 export const fontSans = Inter({
   subsets: ['latin'],
