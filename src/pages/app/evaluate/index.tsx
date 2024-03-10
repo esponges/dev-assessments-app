@@ -13,6 +13,7 @@ import { Heading } from '@/components/atoms/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Editor } from '@/components/organisms/editor';
 import { cn } from '@/lib/utils';
+import { Modal } from '@/components/molecules/modal';
 
 type DevDetails = {
   id: string;
@@ -399,11 +400,12 @@ export default function Evaluate() {
     [assessment]
   );
 
-  const currentTimeLeftMessage = timeLeft.current > 0
-  ? `${Math.floor(timeLeft.current / 60)}:${
-      timeLeft.current % 60 < 10 ? '0' : ''
-    }${timeLeft.current % 60} left`
-  : 'Time is up';
+  const currentTimeLeftMessage =
+    timeLeft.current > 0
+      ? `${Math.floor(timeLeft.current / 60)}:${
+          timeLeft.current % 60 < 10 ? '0' : ''
+        }${timeLeft.current % 60} left`
+      : 'Time is up';
 
   return (
     <Container className="px-6">
@@ -514,6 +516,11 @@ export default function Evaluate() {
         />
         <Button type="submit">Get Stack</Button>
       </form>
+      <Modal
+        id="modal"
+        title="Are you sure?"
+        content="This action cannot be undone."
+      />
     </Container>
   );
 }
