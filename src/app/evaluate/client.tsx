@@ -519,7 +519,7 @@ export default function Evaluate() {
         <Button type="submit">Get Stack</Button>
       </form>
       <Modal
-        id="modal"
+        _id="modal"
         title="Are you sure?"
         content="This action cannot be undone."
       />

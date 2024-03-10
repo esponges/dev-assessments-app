@@ -13,7 +13,8 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  id: string;
+  // todo: we'll use this for when we have multiple modals 
+  _id: string;
   title: string;
   content: string;
   children?: React.ReactNode;
@@ -26,7 +27,7 @@ const fontSans = FontSans({
 });
 
 
-export function Modal({ id, title, content, children, onAccept }: Props) {
+export function Modal({ _id, title, content, children, onAccept }: Props) {
   const [open, setOpen] = useState(false);
 
   const handleAccept = (e: React.MouseEvent) => {
