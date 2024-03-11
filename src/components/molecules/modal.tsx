@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 
 import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 type Props = {
   // todo: we'll use this for when we have multiple modals
@@ -18,6 +19,16 @@ type Props = {
   children?: React.ReactNode;
   triggerContent?: React.ReactNode | string;
   onAccept?: () => void;
+  acceptText?: string;
+  classNames?: {
+    dialog?: string;
+    trigger?: string;
+    content?: string;
+    header?: string;
+    title?: string;
+    description?: string;
+    acceptButton?: string;
+  };
 };
 
 export function Modal({
@@ -27,6 +38,8 @@ export function Modal({
   children,
   triggerContent = 'open',
   onAccept,
+  acceptText,
+  classNames,
 }: Props) {
   const [open, setOpen] = useState(false);
 
@@ -42,19 +55,28 @@ export function Modal({
   };
 
   return (
-    <Dialog open={open}>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
       <DialogTrigger
         onClick={handleOpen}
         asChild={typeof triggerContent !== 'string'}
+        className={classNames?.trigger}
       >
         {triggerContent}
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{content}</DialogDescription>
+      <DialogContent className={classNames?.content}>
+        <DialogHeader className={classNames?.header}>
+          <DialogTitle className={classNames?.title}>{title}</DialogTitle>
+          <DialogDescription className={classNames?.dialog}>{content}</DialogDescription>
           {children}
-          <Button onClick={handleAccept}>Accept</Button>
+          <Button
+            className={cn('md:w-[10rem] mx-auto', classNames?.acceptButton)}
+            onClick={handleAccept}
+          >
+            {acceptText || 'Accept'}
+          </Button>
         </DialogHeader>
       </DialogContent>
     </Dialog>
