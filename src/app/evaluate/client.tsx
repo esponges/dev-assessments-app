@@ -163,7 +163,7 @@ const evaluateQuestions = async (
   return json;
 };
 
-export default function Evaluate() {
+export function Evaluate() {
   const searchParams = useSearchParams();
   const id = searchParams?.get('id');
 
