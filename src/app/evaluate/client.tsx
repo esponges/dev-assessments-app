@@ -166,6 +166,7 @@ const evaluateQuestions = async (
 export default function Evaluate() {
   const searchParams = useSearchParams();
   const id = searchParams?.get('id');
+
   const [candidateId, setCandidateId] = useState<string | null>(id as string);
   const [timeLeft, setTimeLeft] = useState({
     initial: 1800,
@@ -486,12 +487,12 @@ export default function Evaluate() {
               )}
             </div>
           ))}
-          <Button
-            className="mt-4"
-            onClick={handleAssessmentSubmit}
-          >
-            Submit Assessment
-          </Button>
+          <Modal
+            _id="modal"
+            title="Are you sure you want to submit your assessment?"
+            triggerContent={<Button className='mt-4'>Submit Assessment</Button>}
+            content="This action cannot be undone."
+          />
         </form>
       )}
       {/* set candidate id for a different stack */}
@@ -518,11 +519,6 @@ export default function Evaluate() {
         />
         <Button type="submit">Get Stack</Button>
       </form>
-      <Modal
-        _id="modal"
-        title="Are you sure?"
-        content="This action cannot be undone."
-      />
     </Container>
   );
 }
