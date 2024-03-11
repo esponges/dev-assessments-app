@@ -12,10 +12,10 @@ import {
 import Link from 'next/link';
 
 const links = [
-  { href: 'assess-profile', title: 'Assess Dev Profile' },
-  { href: 'evaluate?id=d1d5bd58-f1a6-44bb-a8d3-835fea4880c0', title: 'Evaluate Developer' },
-  { href: 'challenge', title: 'Code Challenge' },
-  { href: 'devs/search', title: 'Get Developer Profiles' },
+  { href: '/assess-profile', title: 'Assess Dev Profile' },
+  { href: '/evaluate?id=d1d5bd58-f1a6-44bb-a8d3-835fea4880c0', title: 'Evaluate Developer' },
+  { href: '/challenge', title: 'Code Challenge' },
+  { href: '/devs/search', title: 'Get Developer Profiles' },
 ];
 
 export function Navigation({ children }: { children: React.ReactNode }) {
