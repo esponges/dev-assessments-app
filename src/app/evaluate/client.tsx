@@ -198,25 +198,26 @@ export default function Evaluate() {
     },
   });
 
-  const { mutate: evaluateQuestionsMutation } = useMutation<
-    EvaluateAssessmentMutationResponse,
-    Error,
-    EvaluateAssessmentMutationRequest
-  >({
-    mutationFn: evaluateQuestions,
-    onSuccess: (res) => {
-      setAssessment((prev) => {
-        if (prev) {
-          return {
-            ...prev,
-            questions: res.evaluatedAssessment,
-          };
-        }
+  const { mutate: evaluateQuestionsMutation, isPending: isEvaluationPending } =
+    useMutation<
+      EvaluateAssessmentMutationResponse,
+      Error,
+      EvaluateAssessmentMutationRequest
+    >({
+      mutationFn: evaluateQuestions,
+      onSuccess: (res) => {
+        setAssessment((prev) => {
+          if (prev) {
+            return {
+              ...prev,
+              questions: res.evaluatedAssessment,
+            };
+          }
 
-        return prev;
-      });
-    },
-  });
+          return prev;
+        });
+      },
+    });
 
   useEffect(() => {
     if (data) {
@@ -240,53 +241,6 @@ export default function Evaluate() {
 
     return () => clearInterval(interval);
   }, [timeLeft.initial, timeLeft.startedAt]);
-
-  // todo: will be used to prevent accidental page navigation
-  // useEffect(() => {
-  //   const confirmationMessage = 'Tus cambios se perderán. ¿Estás seguro?';
-
-  //   // none of these two work - however the default message is ok for now
-  //   const beforeUnloadHandler = (e: WindowEventMap['beforeunload']) => {
-  //     e.returnValue = confirmationMessage;
-  //     return confirmationMessage; // Gecko + Webkit, Safari, Chrome etc.
-  //   };
-
-  //   window.onbeforeunload = (e: BeforeUnloadEvent) => {
-  //     e.returnValue = confirmationMessage;
-  //     return confirmationMessage;
-  //   };
-
-  //   const beforeRouteHandler = (url: string) => {
-  //     if (router.pathname !== url /* && !confirm(confirmationMessage) */) {
-  //       // handleAssessmentDonePrompt();
-  //       // to inform NProgress or something ...
-  //       router.events.emit('routeChangeError');
-  //       // to prevent the transition
-  //       // eslint-disable-next-line no-throw-literal
-  //       throw `Route change to "${url}" was aborted (this error can be safely ignored).
-  //       See https://github.com/zeit/next.js/issues/2476.`;
-  //     }
-  //   };
-
-  //   // if (!isDone.complete) {
-  //   //   window.addEventListener('beforeunload', beforeUnloadHandler);
-  //   //   router.events.on('routeChangeStart', beforeRouteHandler);
-  //   // }
-
-  //   // // let the user leave the page
-  //   // if (isDone.complete || leaveIncomplete || assessmentFetchError) {
-  //   //   window.removeEventListener('beforeunload', beforeUnloadHandler);
-  //   //   router.events.off('routeChangeStart', beforeRouteHandler);
-  //   // }
-  //   window.addEventListener('beforeunload', beforeUnloadHandler);
-  //   router.events.on('routeChangeStart', beforeRouteHandler);
-
-  //   // clean up listener on unmount
-  //   return () => {
-  //     window.removeEventListener('beforeunload', beforeUnloadHandler);
-  //     router.events.off('routeChangeStart', beforeRouteHandler);
-  //   };
-  // }, [router.events, router.pathname]);
 
   const handleGenerateAssessment = async () => {
     // don't send 0 experience
@@ -344,11 +298,7 @@ export default function Evaluate() {
   };
 
   // use the form radio group to handle the selected answer
-  const handleAssessmentSubmit = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
-    e.preventDefault();
-
+  const handleAssessmentSubmit = () => {
     // todo: prevent submission if not all questions are answered
     const questions = assessment?.questions.map((question) => ({
       id: question.id,
@@ -410,9 +360,24 @@ export default function Evaluate() {
         }${timeLeft.current % 60} left`
       : 'Time is up';
 
-  return (
-    <Container className="px-6">
-      {!assessment ? (
+  if (isEvaluationPending) {
+    return (
+      <Container>
+        <Alert
+          classNames={{
+            main: 'w-[20rem] my-4',
+          }}
+          title="Evaluating assessment"
+          description="Please wait while we evaluate your assessment"
+        />
+      </Container>
+    );
+  }
+
+  const renderSection = () => {
+    // cant use switch(true) because some cases will evaluate truthy causing a type error
+    if (!assessment) {
+      return (
         <>
           <Alert
             classNames={{
@@ -435,13 +400,15 @@ export default function Evaluate() {
             {isPending ? 'Generating...' : 'Generate Assessment'}
           </Button>
         </>
-      ) : (
+      );
+    } else if (!!assessment) {
+      return (
         <form className="flex flex-col items-center space-y-8">
           <div
             className={cn(`
-              sticky top-0 left-0 text-white font-semibold bg-green-500 p-4 rounded-md shadow-lg
-              ${timeLeft.current < 300 ? 'bg-red-400' : ''}
-            `)}
+          sticky top-0 left-0 text-white font-semibold bg-green-500 p-4 rounded-md shadow-lg
+          ${timeLeft.current < 300 ? 'bg-red-400' : ''}
+        `)}
           >
             <div>
               Progress:{' '}
@@ -490,11 +457,28 @@ export default function Evaluate() {
           <Modal
             _id="modal"
             title="Are you sure you want to submit your assessment?"
-            triggerContent={<Button className='mt-4'>Submit Assessment</Button>}
             content="This action cannot be undone."
+            triggerContent={<Button className="mt-4">Submit Assessment</Button>}
+            onAccept={handleAssessmentSubmit}
           />
         </form>
-      )}
+      );
+    } else if (isEvaluationPending) {
+      return (
+        <Alert
+          classNames={{
+            main: 'w-[20rem] my-4',
+          }}
+          title="Evaluating assessment"
+          description="Please wait while we evaluate your assessment"
+        />
+      );
+    } else return <></>;
+  };
+
+  return (
+    <Container className="px-6">
+      {renderSection()}
       {/* set candidate id for a different stack */}
       <Heading
         variant="h3"
