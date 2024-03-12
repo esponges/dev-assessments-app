@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { useAuth } from '@clerk/nextjs';
 
 import { Label } from '@/components/ui/label';
 import { InputFile } from '@/components/atoms/input-file';
@@ -18,16 +19,17 @@ type MutationResponse = {
   };
 };
 
-const parseResume = async (file: File) => {
-  const body = {
-    resume: 'file',
-    upsert: false,
-  };
+type MutationRequest = {
+  file: File;
+  userId: string;
+};
 
+const parseResume = async ({ file, userId }: MutationRequest) => {
   const formData = new FormData();
 
   formData.append('file', file);
-  formData.append('body', JSON.stringify(body));
+  formData.append('upsert', 'true');
+  formData.append('userId', userId);
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/candidate/resume/parse`,
@@ -54,7 +56,13 @@ export function AssessProfile({ children }: Props) {
   const [file, setFile] = useState<File | null>();
   const [stack, setStack] = useState<TechStack>([]);
 
-  const { mutate, isPending } = useMutation<MutationResponse, Error, File>({
+  const { userId } = useAuth();
+
+  const { mutate, isPending } = useMutation<
+    MutationResponse,
+    Error,
+    MutationRequest
+  >({
     mutationFn: parseResume,
     onSuccess: (data) => {
       setStack(data.LLMParsedResponse.tech_stack);
@@ -62,8 +70,11 @@ export function AssessProfile({ children }: Props) {
   });
 
   const handleUpload = async () => {
-    if (file) {
-      mutate(file);
+    if (file && userId) {
+      mutate({
+        file,
+        userId,
+      });
     }
   };
 
