@@ -43,26 +43,28 @@ function AuthHeader() {
   return (
     <header className="flex items-center justify-end space-x-4">
       <DropdownMenu>
-        <DropdownMenuTrigger>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+        {!user ? (
           <SignedOut>
-            <SignInButton />
-          </SignedOut>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <SignedIn>
-              <SignOutButton />
-            </SignedIn>
-            <SignedOut>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               <SignInButton />
-            </SignedOut>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+            </NavigationMenuLink>
+          </SignedOut>
+        ) : (
+          <>
+            <DropdownMenuTrigger>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <SignOutButton />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </>
+        )}
       </DropdownMenu>
     </header>
   );
