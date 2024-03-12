@@ -10,7 +10,7 @@ export function Container({
   return (
     <main
       className={cn(
-        'flex min-h-screen flex-col items-center py-12 mx-auto',
+        'flex min-h-screen flex-col items-center py-12 mx-auto md:px-4 px-2 w-full md:max-w-15xl',
         className
       )}
     >
