@@ -1,0 +1,38 @@
+export const testAssessment = [
+  {
+    id: '4711f008-e1b9-45df-8afb-de1c06f7273d',
+    text: 'How does React use the Virtual DOM to optimize UI updates?',
+    type: 'FREE_RESPONSE',
+    choices: [],
+    correctAnswer: '',
+    createdAt: '2024-02-29T01:15:45.684Z',
+    updatedAt: '2024-02-29T01:15:45.684Z',
+    assessmentId: '73614b5b-2157-4dca-905d-a4d8de5e4edc',
+    // inputType: 'code',
+  },
+  {
+    id: 'e934d3c2-b742-4c19-b533-33ada2648af3',
+    text: 'In Node.js, how can you implement a child process with spawn method?',
+    type: 'FREE_RESPONSE',
+    choices: [],
+    correctAnswer: '',
+    createdAt: '2024-02-29T01:15:45.684Z',
+    updatedAt: '2024-02-29T01:15:45.684Z',
+    assessmentId: '73614b5b-2157-4dca-905d-a4d8de5e4edc',
+  },
+  {
+    id: 'fcf37439-6fcf-4988-9272-67ce536dd75b',
+    text: "Explain the concept of 'context' in Go and its usage.",
+    type: 'MULTIPLE_CHOICE',
+    choices: [
+      'It is used for storing global variables',
+      'It is used for passing values down the function stack',
+      'It is used for memory management',
+      'None of the above',
+    ],
+    correctAnswer: 'It is used for passing values down the function stack',
+    createdAt: '2024-02-29T01:15:45.684Z',
+    updatedAt: '2024-02-29T01:15:45.684Z',
+    assessmentId: '73614b5b-2157-4dca-905d-a4d8de5e4edc',
+  },
+];

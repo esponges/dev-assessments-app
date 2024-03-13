@@ -31,7 +31,7 @@ import { useQuery } from '@tanstack/react-query';
 const links = [
   { href: '/assess-profile', title: 'Assess Dev Profile' },
   {
-    href: '/evaluate?id=d1d5bd58-f1a6-44bb-a8d3-835fea4880c0',
+    href: '/evaluate',
     title: 'Evaluate Developer',
   },
   { href: '/challenge', title: 'Code Challenge' },
