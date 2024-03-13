@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+
 import { Container } from '@/components/layouts/container';
 import {
   Table,
@@ -11,21 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useQuery } from '@tanstack/react-query';
-import { useUser } from '@clerk/nextjs';
-
-import type { CandidateResume } from '@/types';
-import { getUserDetails } from '@/lib/fetch';
+import { UseUserDetails } from '@/lib/hooks';
 
 
 export function UserDetails() {
-  const { user } = useUser();
-
-  const { data, isLoading, isError } = useQuery<CandidateResume[]>({
-    queryKey: ['user', user?.id],
-    queryFn: () => getUserDetails(user?.id || ''),
-    enabled: !!user?.id,
-  });
+  const { data, isLoading, isError } = UseUserDetails();
 
   const toRender = useMemo(() => {
     if (isLoading || !data) {

@@ -1,24 +1,23 @@
 'use client';
 
 // import { useSearchParams } from 'next/navigation';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
 
 import { Container } from '@/components/layouts/container';
 import { Alert } from '@/components/molecules/alert';
 import { Button } from '@/components/ui/button';
 import { TechStackList } from '@/components/organisms/tech-stack-list';
 import { Label } from '@/components/ui/label';
-
 import { Heading } from '@/components/atoms/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Editor } from '@/components/organisms/editor';
-import { cn } from '@/lib/utils';
 import { Modal } from '@/components/molecules/modal';
+import { Editor } from '@/components/organisms/editor';
 
-import type { TechStack, CandidateResume } from '@/types';
-import { getUserDetails } from '@/lib/fetch';
+import { UseUserDetails } from '@/lib/hooks';
+import { cn } from '@/lib/utils';
+
+import type { TechStack } from '@/types';
 
 type Assessment = {
   title: string;
@@ -107,8 +106,6 @@ const evaluateQuestions = async (
 };
 
 export function Evaluate() {
-  const { user } = useUser();
-
   const [timeLeft, setTimeLeft] = useState({
     initial: 1800,
     current: 1800,
@@ -121,11 +118,7 @@ export function Evaluate() {
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // create hook for this
-  const { data } = useQuery<CandidateResume[]>({
-    queryKey: ['user', user?.id],
-    queryFn: () => getUserDetails(user?.id || ''),
-    enabled: !!user?.id,
-  });
+  const { data } = UseUserDetails();
   const latestResume = data?.[0];
 
   const { mutate: createAssessment, isPending } = useMutation<
