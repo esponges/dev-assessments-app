@@ -1,8 +1,9 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+// import { useSearchParams } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 
 import { Container } from '@/components/layouts/container';
 import { Alert } from '@/components/molecules/alert';
@@ -10,19 +11,14 @@ import { Button } from '@/components/ui/button';
 import { TechStackList } from '@/components/organisms/tech-stack-list';
 import { Label } from '@/components/ui/label';
 
-import type { TechStack } from '@/types';
 import { Heading } from '@/components/atoms/heading';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Editor } from '@/components/organisms/editor';
 import { cn } from '@/lib/utils';
 import { Modal } from '@/components/molecules/modal';
 
-type DevDetails = {
-  id: string;
-  resume: string;
-  techStack: string[];
-  detailedTechStack: TechStack;
-};
+import type { TechStack, CandidateResume } from '@/types';
+import { getUserDetails } from '@/lib/fetch';
 
 type Assessment = {
   title: string;
@@ -96,20 +92,6 @@ const testAssessment = [
   },
 ];
 
-const getDevDetails = async (id: string) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/candidate/details?id=${id}`
-  );
-
-  if (!res.ok) {
-    throw new Error('Network response was not ok');
-  }
-
-  const json = await res.json();
-
-  return json;
-};
-
 const generateAssessment = async ({
   stack,
 }: GenerateAssessmentMutationRequest) => {
@@ -164,28 +146,25 @@ const evaluateQuestions = async (
 };
 
 export function Evaluate() {
-  const searchParams = useSearchParams();
-  const id = searchParams?.get('id');
+  const { user } = useUser();
 
-  const [candidateId, setCandidateId] = useState<string | null>(id as string);
   const [timeLeft, setTimeLeft] = useState({
     initial: 1800,
     current: 1800,
     startedAt: Date.now(),
   }); // 30 minutes - hard coded for now
-  const [assessment, setAssessment] = useState<Assessment | null>({
-    title: 'Tech Stack Evaluation',
-    questions: testAssessment,
-  });
+
+  const [assessment, setAssessment] = useState<Assessment | null>();
+
   const [techStack, setTechStack] = useState<TechStack>([]);
 
-  // todo: this probably should be done elsewhere, probably when the page is loaded and the
-  // candidate is authenticated
-  const { data } = useQuery<DevDetails>({
-    queryKey: ['candidate', candidateId],
-    queryFn: () => getDevDetails(candidateId || ''),
-    enabled: !!candidateId,
+  // create hook for this
+  const { data } = useQuery<CandidateResume[]>({
+    queryKey: ['user', user?.id],
+    queryFn: () => getUserDetails(user?.id || ''),
+    enabled: !!user?.id,
   });
+  const latestResume = data?.[0];
 
   const { mutate: createAssessment, isPending } = useMutation<
     Assessment,
@@ -198,32 +177,40 @@ export function Evaluate() {
     },
   });
 
-  const { mutate: evaluateQuestionsMutation, isPending: isEvaluationPending } =
-    useMutation<
-      EvaluateAssessmentMutationResponse,
-      Error,
-      EvaluateAssessmentMutationRequest
-    >({
-      mutationFn: evaluateQuestions,
-      onSuccess: (res) => {
-        setAssessment((prev) => {
-          if (prev) {
-            return {
-              ...prev,
-              questions: res.evaluatedAssessment,
-            };
-          }
+  const {
+    mutate: evaluateQuestionsMutation,
+    isPending: isEvaluatingAssessment,
+  } = useMutation<
+    EvaluateAssessmentMutationResponse,
+    Error,
+    EvaluateAssessmentMutationRequest
+  >({
+    mutationFn: evaluateQuestions,
+    onSuccess: (res) => {
+      setAssessment((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            questions: res.evaluatedAssessment,
+          };
+        }
 
-          return prev;
-        });
-      },
-    });
+        return prev;
+      });
+      // restart the timer
+      setTimeLeft({
+        initial: 1800,
+        current: 1800,
+        startedAt: Date.now(),
+      });
+    },
+  });
 
   useEffect(() => {
-    if (data) {
-      setTechStack(data.detailedTechStack);
+    if (latestResume) {
+      setTechStack(latestResume.detailedTechStack);
     }
-  }, [data]);
+  }, [latestResume]);
 
   // reduce time left every second
   useEffect(() => {
@@ -360,20 +347,6 @@ export function Evaluate() {
         }${timeLeft.current % 60} left`
       : 'Time is up';
 
-  if (isEvaluationPending) {
-    return (
-      <Container>
-        <Alert
-          classNames={{
-            main: 'w-[20rem] my-4',
-          }}
-          title="Evaluating assessment"
-          description="Please wait while we evaluate your assessment"
-        />
-      </Container>
-    );
-  }
-
   const renderSection = () => {
     // cant use switch(true) because some cases will evaluate truthy causing a type error
     if (!assessment) {
@@ -384,7 +357,8 @@ export function Evaluate() {
               main: 'w-[20rem] my-4',
             }}
             title="Evaluation criteria"
-            description="You will be evaluated based on the following tech stack"
+            description={`You will be evaluated based on the following tech stack from you latest resume. 
+            Please make sure to select the most accurate tech stack.`}
           />
           {techStack.length > 0 ? (
             <TechStackList
@@ -400,6 +374,17 @@ export function Evaluate() {
             {isPending ? 'Generating...' : 'Generate Assessment'}
           </Button>
         </>
+      );
+    }
+    if (isEvaluatingAssessment) {
+      return (
+        <Alert
+          classNames={{
+            main: 'w-[20rem] my-4',
+          }}
+          title="Evaluating assessment"
+          description="Please wait while we evaluate your assessment"
+        />
       );
     } else if (!!assessment) {
       return (
@@ -463,46 +448,8 @@ export function Evaluate() {
           />
         </form>
       );
-    } else if (isEvaluationPending) {
-      return (
-        <Alert
-          classNames={{
-            main: 'w-[20rem] my-4',
-          }}
-          title="Evaluating assessment"
-          description="Please wait while we evaluate your assessment"
-        />
-      );
     } else return <></>;
   };
 
-  return (
-    <Container className="px-6">
-      {renderSection()}
-      {/* set candidate id for a different stack */}
-      <Heading
-        variant="h3"
-        className="mt-8"
-      >
-        Or evaluate a different candidate
-      </Heading>
-      <form
-        className="flex flex-col items-center space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          const formData = new FormData(e.target as HTMLFormElement);
-
-          setCandidateId(formData.get('candidateId') as string);
-        }}
-      >
-        <input
-          type="text"
-          name="candidateId"
-          placeholder="Enter candidate id"
-          className="border border-gray-300 p-2 rounded-lg"
-        />
-        <Button type="submit">Get Stack</Button>
-      </form>
-    </Container>
-  );
+  return <Container className="px-6">{renderSection()}</Container>;
 }

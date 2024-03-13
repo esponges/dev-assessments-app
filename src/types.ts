@@ -5,3 +5,13 @@ export type Tech = {
 };
 
 export type TechStack = Tech[];
+
+export type CandidateResume = {
+  id: string;
+  userId: string;
+  resume: string;
+  techStack: string[];
+  detailedTechStack: TechStack;
+  createdAt: string;
+  updatedAt: string;
+};

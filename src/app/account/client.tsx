@@ -14,35 +14,16 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { useUser } from '@clerk/nextjs';
 
-import type { TechStack } from '@/types';
+import type { CandidateResume } from '@/types';
+import { getUserDetails } from '@/lib/fetch';
 
-type CandidateResume = {
-  id: string;
-  userId: string;
-  resume: string;
-  techStack: string[];
-  detailedTechStack: TechStack[];
-  createdAt: string;
-  updatedAt: string;
-};
-
-const fetchUserDetails = async (id: string) => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/candidate/details?id=${id}`
-  );
-
-  if (!res.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return res.json();
-};
 
 export function UserDetails() {
   const { user } = useUser();
 
   const { data, isLoading, isError } = useQuery<CandidateResume[]>({
     queryKey: ['user', user?.id],
-    queryFn: () => fetchUserDetails(user?.id || ''),
+    queryFn: () => getUserDetails(user?.id || ''),
     enabled: !!user?.id,
   });
 
