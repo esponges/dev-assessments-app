@@ -23,7 +23,7 @@ export const useUserDetails = (): {
     queryKey: ['user', user?.id],
     queryFn: () => getUserDetails(user?.id || ''),
     enabled: !!user?.id,
-  });
+  }); 
 
   return { data, user, isLoading, isError };
 };
