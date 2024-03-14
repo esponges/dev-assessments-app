@@ -25,7 +25,7 @@ import {
   UserButton,
   SignOutButton,
 } from '@clerk/nextjs';
-import { UseUserDetails } from '@/lib/hooks';
+import { useUserDetails } from '@/lib/hooks';
 
 const links = [
   { href: '/assess-profile', title: 'Assess Dev Profile' },
@@ -38,7 +38,7 @@ const links = [
 ];
 
 function AuthHeader() {
-  const { user } = UseUserDetails();
+  const { user } = useUserDetails();
 
   return (
     <header className="flex items-center justify-end space-x-4">

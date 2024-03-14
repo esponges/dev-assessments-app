@@ -5,15 +5,21 @@ import { useUser } from '@clerk/nextjs';
 import type { CandidateResume } from '@/types';
 import type { UserResource } from '@clerk/types';
 
-export const UseUserDetails = (): {
-  data?: CandidateResume[];
+type UserDetailsResponse = {
+  user: {
+    resumes: CandidateResume[];
+  }
+};
+
+export const useUserDetails = (): {
+  data?: UserDetailsResponse;
   isLoading: boolean;
   isError: boolean;
   user: UserResource | null | undefined;
 } => {
   const { user } = useUser();
 
-  const { data, isLoading, isError } = useQuery<CandidateResume[]>({
+  const { data, isLoading, isError } = useQuery<UserDetailsResponse>({
     queryKey: ['user', user?.id],
     queryFn: () => getUserDetails(user?.id || ''),
     enabled: !!user?.id,

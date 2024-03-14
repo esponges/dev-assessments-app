@@ -1,6 +1,5 @@
 'use client';
 
-// import { useSearchParams } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -14,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Modal } from '@/components/molecules/modal';
 import { Editor } from '@/components/organisms/editor';
 
-import { UseUserDetails } from '@/lib/hooks';
+import { useUserDetails } from '@/lib/hooks';
 import { cn } from '@/lib/utils';
 
 import type { TechStack } from '@/types';
@@ -118,8 +117,8 @@ export function Evaluate() {
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // create hook for this
-  const { data } = UseUserDetails();
-  const latestResume = data?.[0];
+  const { data } = useUserDetails();
+  const latestResume = data?.user.resumes[0];
 
   const { mutate: createAssessment, isPending } = useMutation<
     Assessment,

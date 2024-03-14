@@ -12,18 +12,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { UseUserDetails } from '@/lib/hooks';
+import { useUserDetails } from '@/lib/hooks';
 
 
 export function UserDetails() {
-  const { data, isLoading, isError } = UseUserDetails();
+  const { data, isLoading, isError } = useUserDetails();
 
   const toRender = useMemo(() => {
     if (isLoading || !data) {
       return <div>Loading...</div>;
     } else if (isError) {
       return <div>Error</div>;
-    } else if (data.length > 0) {
+    } else if (data?.user?.resumes?.length > 0) {
       return (
         <Table>
           <TableCaption>User Details</TableCaption>
@@ -36,7 +36,7 @@ export function UserDetails() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((resume) => (
+            {data.user.resumes.map((resume) => (
               <TableRow key={resume.id}>
                 <TableCell>{resume.resume}</TableCell>
                 <TableCell>{resume.techStack.join(', ')}</TableCell>
