@@ -37,13 +37,11 @@ const links = [
   { href: '/devs/search', title: 'Get Developer Profiles' },
 ];
 
-function AuthHeader() {
-  const { user } = useUserDetails();
-
+function AuthHeader({ isSignedIn }: { isSignedIn?: boolean }) {
   return (
     <header className="flex items-center justify-end space-x-4">
       <DropdownMenu>
-        {!user ? (
+        {!isSignedIn ? (
           <SignedOut>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               <SignInButton />
@@ -75,28 +73,50 @@ function AuthHeader() {
   );
 }
 
+function NavigationLinks() {
+  return (
+    <>
+      {links.map((link, index) => (
+        <NavigationMenuItem key={index}>
+          <Link
+            href={link.href}
+            legacyBehavior
+            passHref
+          >
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              {link.title}
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+      ))}
+    </>
+  );
+}
+
 export function Navigation({ children }: { children: React.ReactNode }) {
+  const { user } = useUserDetails();
+
   return (
     <>
       <NavigationMenu className="mx-auto">
         <NavigationMenuList>
-          {links.map((link, index) => (
-            <NavigationMenuItem key={index}>
-              <Link
-                href={link.href}
-                legacyBehavior
-                passHref
-              >
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  {link.title}
-                </NavigationMenuLink>
-              </Link>
-            </NavigationMenuItem>
-          ))}
+          {!!user ? (
+            <NavigationLinks />
+          ) : (
+            <Link
+              href="/"
+              passHref
+              legacyBehavior
+            >
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Dev Hunter
+              </NavigationMenuLink>
+            </Link>
+          )}
         </NavigationMenuList>
         <NavigationMenuIndicator />
         <NavigationMenuViewport />
-        <AuthHeader />
+        <AuthHeader isSignedIn={!!user} />
       </NavigationMenu>
       {children}
     </>
