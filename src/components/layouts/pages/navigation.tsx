@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 import {
   NavigationMenu,
   NavigationMenuIndicator,
@@ -38,13 +40,19 @@ const links = [
 ];
 
 function AuthHeader({ isSignedIn }: { isSignedIn?: boolean }) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push('/');
+  };
+
   return (
     <header className="flex items-center justify-end space-x-4">
       <DropdownMenu>
         {!isSignedIn ? (
           <SignedOut>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              <SignInButton />
+              <SignInButton redirectUrl="/account" />
             </NavigationMenuLink>
           </SignedOut>
         ) : (
@@ -63,7 +71,7 @@ function AuthHeader({ isSignedIn }: { isSignedIn?: boolean }) {
               </Link>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <SignOutButton />
+                <SignOutButton signOutCallback={handleLogout} />
               </DropdownMenuItem>
             </DropdownMenuContent>
           </>
