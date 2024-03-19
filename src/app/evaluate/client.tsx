@@ -303,7 +303,7 @@ export function Evaluate() {
 
   const renderSection = () => {
     // cant use switch(true) because some cases will evaluate truthy causing a type error
-    if (!assessment) {
+    if (!assessment && data && data?.user?.resumes?.length > 0) {
       return (
         <>
           <Alert
@@ -401,6 +401,25 @@ export function Evaluate() {
             onAccept={handleAssessmentSubmit}
           />
         </form>
+      );
+    } else if (data?.user?.resumes?.length === 0) {
+      return (
+        <>
+          <Alert
+            classNames={{
+              main: 'w-[20rem] my-4',
+            }}
+            title="No resume found"
+            description="Please add a resume to your account to generate an assessment"
+          />
+          {/* give link to user to go to assess-profile */}
+          <Button
+            className="mt-10"
+            href="/assess-profile"
+          >
+            Add Resume
+          </Button>
+        </>
       );
     } else return <></>;
   };
