@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 import type { TechStack } from '@/types';
 
 type Assessment = {
+  id: string;
   title: string;
   questions: {
     id: string;
@@ -31,6 +32,7 @@ type Assessment = {
     correctAnswer?: string;
     score?: number;
     feedbackMessage?: string;
+    // this doesn't exists in the backend
     inputType?: 'text' | 'code';
   }[];
 };
@@ -40,6 +42,8 @@ type GenerateAssessmentMutationRequest = {
 };
 
 type EvaluateAssessmentMutationRequest = {
+  candidateId: string,
+  assessmentId: string;
   questions: {
     id: string;
     answer: string;
@@ -82,13 +86,13 @@ const generateAssessment = async ({
 };
 
 const evaluateQuestions = async (
-  questions: EvaluateAssessmentMutationRequest
+  payload: EvaluateAssessmentMutationRequest
 ) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/assessments/questions/evaluate`,
     {
       method: 'POST',
-      body: JSON.stringify(questions),
+      body: JSON.stringify(payload),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -117,7 +121,7 @@ export function Evaluate() {
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // create hook for this
-  const { data } = useUserDetails();
+  const { data, user } = useUserDetails();
   const latestResume = data?.user.resumes[0];
 
   const { mutate: createAssessment, isPending } = useMutation<
@@ -249,6 +253,8 @@ export function Evaluate() {
     // send them to the backend to be graded
     if (questions) {
       evaluateQuestionsMutation({
+        candidateId: user?.id || '',
+        assessmentId: assessment?.id || '',
         questions,
       });
     }
