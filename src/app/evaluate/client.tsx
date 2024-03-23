@@ -135,14 +135,16 @@ function AddResume() {
   );
 }
 
-function EvaluatingAssessment() {
+function PendingAssessment({ isCreating }: { isCreating?: boolean }) {
   return (
     <Alert
       classNames={{
         main: 'w-[20rem] my-4',
       }}
-      title="Evaluating assessment"
-      description="Please wait while we evaluate your assessment"
+      title={`${isCreating ? 'Generating' : 'Evaluating'} Assessment`}
+      description={`Please wait while we ${
+        isCreating ? 'generate' : 'evaluating'
+      } your assessment`}
     />
   );
 }
@@ -165,16 +167,13 @@ export function Evaluate() {
   const { data, user } = useUserDetails();
   const latestResume = data?.user.resumes[0];
 
-  const { mutate: createAssessment, isPending } = useMutation<
-    Assessment,
-    Error,
-    GenerateAssessmentMutationRequest
-  >({
-    mutationFn: generateAssessment,
-    onSuccess: (res) => {
-      setAssessment(res);
-    },
-  });
+  const { mutate: createAssessment, isPending: isCreatingAssessment } =
+    useMutation<Assessment, Error, GenerateAssessmentMutationRequest>({
+      mutationFn: generateAssessment,
+      onSuccess: (res) => {
+        setAssessment(res);
+      },
+    });
 
   const {
     mutate: evaluateQuestionsMutation,
@@ -341,7 +340,11 @@ export function Evaluate() {
 
   const renderSection = () => {
     // cant use switch(true) because some cases will evaluate truthy causing a type error
-    if (!assessment && data && data?.user?.resumes?.length > 0) {
+    if (isCreatingAssessment || isEvaluatingAssessment) {
+      return <PendingAssessment isCreating={isCreatingAssessment} />;
+    } else if (data?.user?.resumes?.length === 0) {
+      return <AddResume />;
+    } else if (!assessment && data && data.user?.resumes?.length > 0) {
       return (
         <>
           <Alert
@@ -350,7 +353,8 @@ export function Evaluate() {
             }}
             title="Evaluation criteria"
             description={`You will be evaluated based on the following tech stack from you latest resume. 
-            Please make sure to select the most accurate tech stack.`}
+            Please make sure to select the most accurate tech stack. 
+            Less than 1 year of experience will not be considered.`}
           />
           {techStack.length > 0 ? (
             <TechStackList
@@ -361,54 +365,11 @@ export function Evaluate() {
           <Button
             className="mt-10"
             onClick={handleGenerateAssessment}
-            disabled={!techStack.length || isPending}
+            disabled={!techStack.length}
           >
-            {isPending ? 'Generating...' : 'Generate Assessment'}
+            Create Assessment
           </Button>
         </>
-      );
-    } else if (isEvaluatingAssessment) {
-      return <EvaluatingAssessment />;
-    } else if (!!evaluatedAssessment) {
-      return (
-        <div className="flex flex-col items-center space-y-8">
-          <Heading variant="h2">Assessment Results</Heading>
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex items-center space-x-4">
-              <div>Total Score: {evaluatedAssessment.totalScore}</div>
-              <Button onClick={() => setEvaluatedAssessment(null)}>
-                Retake Assessment
-              </Button>
-            </div>
-            {evaluatedAssessment.evaluatedAssessment.map((question, index) => (
-              <div
-                key={index}
-                className="w-3/4 border border-gray-300 p-4 pt-0 rounded-lg"
-              >
-                <Heading
-                  variant="h3"
-                  className="disable-highlight"
-                >
-                  {question.text}
-                </Heading>
-                <div>
-                  <div>
-                    <strong>Your Answer:</strong> {question.answer}
-                  </div>
-                  <div>
-                    <strong>Correct Answer:</strong> {question.correctAnswer}
-                  </div>
-                  <div>
-                    <strong>Score:</strong> {question.score}
-                  </div>
-                  <div>
-                    <strong>Feedback:</strong> {question.feedbackMessage}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       );
     } else if (!!assessment) {
       return (
@@ -472,9 +433,49 @@ export function Evaluate() {
           />
         </form>
       );
-    } else if (data?.user?.resumes?.length === 0) {
-      return <AddResume />;
-    } else return <></>;
+    } else if (!!evaluatedAssessment) {
+      return (
+        <div className="flex flex-col items-center space-y-8">
+          <Heading variant="h2">Assessment Results</Heading>
+          <div className="flex flex-col items-center space-y-4">
+            <div className="flex items-center space-x-4">
+              <div>Total Score: {evaluatedAssessment.totalScore}</div>
+              <Button onClick={() => setEvaluatedAssessment(null)}>
+                Retake Assessment
+              </Button>
+            </div>
+            {evaluatedAssessment.evaluatedAssessment.map((question, index) => (
+              <div
+                key={index}
+                className="w-3/4 border border-gray-300 p-4 pt-0 rounded-lg"
+              >
+                <Heading
+                  variant="h3"
+                  className="disable-highlight"
+                >
+                  {question.text}
+                </Heading>
+                <div>
+                  <div>
+                    <strong>Your Answer:</strong> {question.answer}
+                  </div>
+                  <div>
+                    <strong>Correct Answer:</strong> {question.correctAnswer}
+                  </div>
+                  <div>
+                    <strong>Score:</strong> {question.score}
+                  </div>
+                  <div>
+                    <strong>Feedback:</strong> {question.feedbackMessage}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return <></>;
   };
 
   return <Container className="px-6">{renderSection()}</Container>;
