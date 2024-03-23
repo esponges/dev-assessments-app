@@ -52,7 +52,13 @@ type EvaluateAssessmentMutationRequest = {
 
 type EvaluateAssessmentMutationResponse = {
   totalScore: number;
-  evaluatedAssessment: Assessment['questions'];
+  evaluatedAssessment: {
+    text: string;
+    answer: string;
+    correctAnswer: string;
+    score: number;
+    feedbackMessage: string;
+  }[];
 };
 
 const generateAssessment = async ({
@@ -118,6 +124,7 @@ export function Evaluate() {
   // you can use the testAssessment from the test-data.ts file
   // to mock the instead of creating a new one every time
   const [assessment, setAssessment] = useState<Assessment | null>();
+  const [evaluatedAssessment, setEvaluatedAssessment] = useState<EvaluateAssessmentMutationResponse | null>();
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // create hook for this
@@ -145,16 +152,7 @@ export function Evaluate() {
   >({
     mutationFn: evaluateQuestions,
     onSuccess: (res) => {
-      setAssessment((prev) => {
-        if (prev) {
-          return {
-            ...prev,
-            questions: res.evaluatedAssessment,
-          };
-        }
-
-        return prev;
-      });
+      setEvaluatedAssessment(res);
       // restart the timer
       setTimeLeft({
         initial: 1800,
@@ -225,6 +223,8 @@ export function Evaluate() {
     });
   };
 
+  console.log({ assessment });
+
   const handleInputTypeChange = (type: 'text' | 'code', idx: number) => {
     setAssessment((prev) => {
       if (prev) {
@@ -265,7 +265,7 @@ export function Evaluate() {
       <div>
         {type === 'text' ? (
           <textarea
-            onChange={(e) => handleOptionChange(e.target.value, 0)}
+            onChange={(e) => handleOptionChange(e.target.value, idx)}
             className="w-full h-24 p-2 border border-gray-300 rounded-lg"
             placeholder={`Type your ${type} answer here`}
           />
@@ -273,7 +273,7 @@ export function Evaluate() {
           <Editor
             value=""
             language="javascript"
-            onChange={(value) => handleOptionChange(value || '', 0)}
+            onChange={(value) => handleOptionChange(value || '', idx)}
             height="10rem"
             classNames={{
               main: 'md:w-full',
@@ -335,8 +335,7 @@ export function Evaluate() {
           </Button>
         </>
       );
-    }
-    if (isEvaluatingAssessment) {
+    } else if (isEvaluatingAssessment) {
       return (
         <Alert
           classNames={{
@@ -345,6 +344,49 @@ export function Evaluate() {
           title="Evaluating assessment"
           description="Please wait while we evaluate your assessment"
         />
+      );
+    } else if (!!evaluatedAssessment) {
+      return (
+        <div className="flex flex-col items-center space-y-8">
+          <Heading variant="h2">Assessment Results</Heading>
+          <div className="flex flex-col items-center space-y-4">
+            <div className="flex items-center space-x-4">
+              <div>Total Score: {evaluatedAssessment.totalScore}</div>
+              <Button
+                onClick={() => setEvaluatedAssessment(null)}
+              >
+                Retake Assessment
+              </Button>
+            </div>
+            {evaluatedAssessment.evaluatedAssessment.map((question, index) => (
+              <div
+                key={index}
+                className="w-3/4 border border-gray-300 p-4 pt-0 rounded-lg"
+              >
+                <Heading
+                  variant="h3"
+                  className="disable-highlight"
+                >
+                  {question.text}
+                </Heading>
+                <div>
+                  <div>
+                    <strong>Your Answer:</strong> {question.answer}
+                  </div>
+                  <div>
+                    <strong>Correct Answer:</strong> {question.correctAnswer}
+                  </div>
+                  <div>
+                    <strong>Score:</strong> {question.score}
+                  </div>
+                  <div>
+                    <strong>Feedback:</strong> {question.feedbackMessage}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       );
     } else if (!!assessment) {
       return (
