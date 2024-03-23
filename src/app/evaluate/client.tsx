@@ -371,6 +371,47 @@ export function Evaluate() {
           </Button>
         </>
       );
+    } else if (!!evaluatedAssessment) {
+      return (
+        <div className="flex flex-col items-center space-y-8">
+          <Heading variant="h2">Assessment Results</Heading>
+          <div className="flex flex-col items-center space-y-4">
+            <div className="flex items-center space-x-4">
+              <div>Total Score: {evaluatedAssessment.totalScore}</div>
+              <Button onClick={() => setEvaluatedAssessment(null)}>
+                Retake Assessment
+              </Button>
+            </div>
+            {evaluatedAssessment.evaluatedAssessment.map((question, index) => (
+              <div
+                key={index}
+                className="w-3/4 border border-gray-300 p-4 pt-0 rounded-lg"
+              >
+                <Heading
+                  variant="h3"
+                  className="disable-highlight"
+                >
+                  {question.text}
+                </Heading>
+                <div>
+                  <div>
+                    <strong>Your Answer:</strong> {question.answer}
+                  </div>
+                  <div>
+                    <strong>Correct Answer:</strong> {question.correctAnswer}
+                  </div>
+                  <div>
+                    <strong>Score:</strong> {question.score}
+                  </div>
+                  <div>
+                    <strong>Feedback:</strong> {question.feedbackMessage}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
     } else if (!!assessment) {
       return (
         <form className="flex flex-col items-center space-y-8">
@@ -433,48 +474,7 @@ export function Evaluate() {
           />
         </form>
       );
-    } else if (!!evaluatedAssessment) {
-      return (
-        <div className="flex flex-col items-center space-y-8">
-          <Heading variant="h2">Assessment Results</Heading>
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex items-center space-x-4">
-              <div>Total Score: {evaluatedAssessment.totalScore}</div>
-              <Button onClick={() => setEvaluatedAssessment(null)}>
-                Retake Assessment
-              </Button>
-            </div>
-            {evaluatedAssessment.evaluatedAssessment.map((question, index) => (
-              <div
-                key={index}
-                className="w-3/4 border border-gray-300 p-4 pt-0 rounded-lg"
-              >
-                <Heading
-                  variant="h3"
-                  className="disable-highlight"
-                >
-                  {question.text}
-                </Heading>
-                <div>
-                  <div>
-                    <strong>Your Answer:</strong> {question.answer}
-                  </div>
-                  <div>
-                    <strong>Correct Answer:</strong> {question.correctAnswer}
-                  </div>
-                  <div>
-                    <strong>Score:</strong> {question.score}
-                  </div>
-                  <div>
-                    <strong>Feedback:</strong> {question.feedbackMessage}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
+    } 
     return <></>;
   };
 
