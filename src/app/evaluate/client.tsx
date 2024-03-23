@@ -42,7 +42,7 @@ type GenerateAssessmentMutationRequest = {
 };
 
 type EvaluateAssessmentMutationRequest = {
-  candidateId: string,
+  candidateId: string;
   assessmentId: string;
   questions: {
     id: string;
@@ -114,6 +114,39 @@ const evaluateQuestions = async (
   return json;
 };
 
+function AddResume() {
+  return (
+    <>
+      <Alert
+        classNames={{
+          main: 'w-[20rem] my-4',
+        }}
+        title="No resume found"
+        description="Please add a resume to your account to generate an assessment"
+      />
+      {/* give link to user to go to assess-profile */}
+      <Button
+        className="mt-10"
+        href="/assess-profile"
+      >
+        Add Resume
+      </Button>
+    </>
+  );
+}
+
+function EvaluatingAssessment() {
+  return (
+    <Alert
+      classNames={{
+        main: 'w-[20rem] my-4',
+      }}
+      title="Evaluating assessment"
+      description="Please wait while we evaluate your assessment"
+    />
+  );
+}
+
 export function Evaluate() {
   const [timeLeft, setTimeLeft] = useState({
     initial: 1800,
@@ -124,7 +157,8 @@ export function Evaluate() {
   // you can use the testAssessment from the test-data.ts file
   // to mock the instead of creating a new one every time
   const [assessment, setAssessment] = useState<Assessment | null>();
-  const [evaluatedAssessment, setEvaluatedAssessment] = useState<EvaluateAssessmentMutationResponse | null>();
+  const [evaluatedAssessment, setEvaluatedAssessment] =
+    useState<EvaluateAssessmentMutationResponse | null>();
   const [techStack, setTechStack] = useState<TechStack>([]);
 
   // create hook for this
@@ -222,8 +256,6 @@ export function Evaluate() {
       return prev;
     });
   };
-
-  console.log({ assessment });
 
   const handleInputTypeChange = (type: 'text' | 'code', idx: number) => {
     setAssessment((prev) => {
@@ -336,15 +368,7 @@ export function Evaluate() {
         </>
       );
     } else if (isEvaluatingAssessment) {
-      return (
-        <Alert
-          classNames={{
-            main: 'w-[20rem] my-4',
-          }}
-          title="Evaluating assessment"
-          description="Please wait while we evaluate your assessment"
-        />
-      );
+      return <EvaluatingAssessment />;
     } else if (!!evaluatedAssessment) {
       return (
         <div className="flex flex-col items-center space-y-8">
@@ -352,9 +376,7 @@ export function Evaluate() {
           <div className="flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-4">
               <div>Total Score: {evaluatedAssessment.totalScore}</div>
-              <Button
-                onClick={() => setEvaluatedAssessment(null)}
-              >
+              <Button onClick={() => setEvaluatedAssessment(null)}>
                 Retake Assessment
               </Button>
             </div>
@@ -451,24 +473,7 @@ export function Evaluate() {
         </form>
       );
     } else if (data?.user?.resumes?.length === 0) {
-      return (
-        <>
-          <Alert
-            classNames={{
-              main: 'w-[20rem] my-4',
-            }}
-            title="No resume found"
-            description="Please add a resume to your account to generate an assessment"
-          />
-          {/* give link to user to go to assess-profile */}
-          <Button
-            className="mt-10"
-            href="/assess-profile"
-          >
-            Add Resume
-          </Button>
-        </>
-      );
+      return <AddResume />;
     } else return <></>;
   };
 
