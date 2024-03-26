@@ -7,7 +7,7 @@ import { Heading } from '../atoms/heading';
 
 type Props = {
   stack: TechStack;
-  setStack: (stack: TechStack) => void;
+  setStack?: (stack: TechStack) => void;
   title?: string;
 };
 
@@ -26,7 +26,7 @@ export function TechStackList({ stack, setStack, title }: Props) {
           })
         : stack.filter((el) => el.tech !== key);
 
-    setStack(updatedStack);
+    if (setStack) setStack(updatedStack);
   };
 
   const handleRemoveTech = (key: string) => {
@@ -49,7 +49,7 @@ export function TechStackList({ stack, setStack, title }: Props) {
       },
     ];
 
-    setStack(updatedStack);
+    if (setStack) setStack(updatedStack);
   };
 
   return (

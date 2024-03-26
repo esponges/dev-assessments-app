@@ -7,6 +7,8 @@ import type { WebhookEvent } from '@clerk/nextjs/server';
   npm install -g localtunnel
   lt --port 3000
   dont forget to add the /api/webhooks path to the test url in clerk tests
+
+  todo: this is already implements in the backend, so we can remove this
 */
 
 export async function POST(req: Request) {

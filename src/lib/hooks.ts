@@ -16,6 +16,7 @@ export const useUserDetails = (): {
   isLoading: boolean;
   isError: boolean;
   user: UserResource | null | undefined;
+  latestTechStack: CandidateResume['detailedTechStack'];
 } => {
   const { user } = useUser();
 
@@ -23,7 +24,9 @@ export const useUserDetails = (): {
     queryKey: ['user', user?.id],
     queryFn: () => getUserDetails(user?.id || ''),
     enabled: !!user?.id,
-  }); 
+  });
 
-  return { data, user, isLoading, isError };
+  const latestTechStack = data?.user.resumes[0].detailedTechStack || [];
+
+  return { data, user, isLoading, isError, latestTechStack };
 };

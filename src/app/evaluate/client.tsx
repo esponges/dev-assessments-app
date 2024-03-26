@@ -161,11 +161,8 @@ export function Evaluate() {
   const [assessment, setAssessment] = useState<Assessment | null>();
   const [evaluatedAssessment, setEvaluatedAssessment] =
     useState<EvaluateAssessmentMutationResponse | null>();
-  const [techStack, setTechStack] = useState<TechStack>([]);
 
-  // create hook for this
-  const { data, user } = useUserDetails();
-  const latestResume = data?.user.resumes[0];
+  const { data, user, latestTechStack: techStack } = useUserDetails();
 
   const { mutate: createAssessment, isPending: isCreatingAssessment } =
     useMutation<Assessment, Error, GenerateAssessmentMutationRequest>({
@@ -194,12 +191,6 @@ export function Evaluate() {
       });
     },
   });
-
-  useEffect(() => {
-    if (latestResume) {
-      setTechStack(latestResume.detailedTechStack);
-    }
-  }, [latestResume]);
 
   // reduce time left every second
   useEffect(() => {
@@ -359,7 +350,6 @@ export function Evaluate() {
           {techStack.length > 0 ? (
             <TechStackList
               stack={techStack}
-              setStack={setTechStack}
             />
           ) : null}
           <Button

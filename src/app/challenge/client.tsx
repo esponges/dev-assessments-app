@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useCallback, useMemo, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 
 import type { Tech, TechStack } from '@/types';
 import { Editor } from '@/components/organisms/editor';
+import { useUserDetails } from '@/lib/hooks';
 
 type CreateMutationResponse = {
   challenge: string;
@@ -100,10 +101,11 @@ const MOCKED_EVALUATION: EvaluateMutationResponse = {
 };
 
 export function Challenge() {
-  const [techStack, setTechStack] = useState<TechStack>(MOCKED_TECH_STACK);
-  const [challenge, setChallenge] = useState<string>(MOCKED_CHALLENGE);
+  const [challenge, setChallenge] = useState<string>('');
   const [evaluation, setEvaluation] =
     useState<EvaluateMutationResponse | null>();
+
+  const { latestTechStack: techStack } = useUserDetails();
 
   const { mutate, isPending } = useMutation<
     CreateMutationResponse,
@@ -156,7 +158,6 @@ export function Challenge() {
             {/* todo: force this component to use X number of stacks */}
             <TechStackList
               stack={techStack}
-              setStack={setTechStack}
             />
             <Button
               className="my-4"
