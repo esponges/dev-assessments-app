@@ -102,6 +102,7 @@ const MOCKED_EVALUATION: EvaluateMutationResponse = {
 
 export function Challenge() {
   const [challenge, setChallenge] = useState<string>('');
+  const [selectedTech, setSelectedTech] = useState<string | null>(null);
   const [evaluation, setEvaluation] =
     useState<EvaluateMutationResponse | null>();
 
@@ -160,15 +161,30 @@ export function Challenge() {
               stack={techStack}
               showDetails={false}
               useSelectLabelButton
-              title='Select Technology'
+              title="Select Technology"
               showAddTech={false}
+              onOptionClick={setSelectedTech}
             />
+            {selectedTech ? (
+              <div className="my-4 text-center">
+                <Alert
+                  variant="destructive"
+                  description={`
+                  You will be evaluated in this technology only. 
+                  You can later be evaluated in other technologies.
+                  `}
+                />
+                <Heading variant="h1">{selectedTech}</Heading>
+              </div>
+            ) : null}
             <Button
               className="my-4"
               onClick={handleCreateChallenge}
-              disabled={isPending}
+              disabled={isPending || !selectedTech}
             >
-              {isPending ? 'Loading...' : 'Create Challenge'}
+              {isPending
+                ? 'Loading...'
+                : `Start ${selectedTech || ''} Challenge`}
             </Button>
           </>
         );
@@ -217,6 +233,7 @@ export function Challenge() {
     techStack,
     handleCreateChallenge,
     handleEvaluateChallenge,
+    selectedTech,
   ]);
 
   return (

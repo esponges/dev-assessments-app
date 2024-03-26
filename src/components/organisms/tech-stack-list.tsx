@@ -12,7 +12,7 @@ type Props = {
   title?: string;
   showDetails?: boolean;
   useSelectLabelButton?: boolean;
-  onTechClick?: (tech: string) => void;
+  onOptionClick?: (tech: string) => void;
   showAddTech?: boolean;
 };
 
@@ -22,7 +22,7 @@ export function TechStackList({
   title,
   showDetails = true,
   useSelectLabelButton = false,
-  onTechClick,
+  onOptionClick,
   showAddTech = true,
 }: Props) {
   const handleTechStackUpdate = (key: string, value: number) => {
@@ -65,6 +65,10 @@ export function TechStackList({
     if (setStack) setStack(updatedStack);
   };
 
+  const handleOptionClick = (tech: string) => {
+    if (onOptionClick) onOptionClick(tech);
+  };
+
   return (
     <div className="text-center">
       <Heading
@@ -86,7 +90,7 @@ export function TechStackList({
             >
               {useSelectLabelButton ? (
                 <Button
-                  onClick={() => onTechClick && onTechClick(el.tech)}
+                  onClick={() => handleOptionClick(el.tech)}
                   className="my-2"
                 >
                   {el.tech}

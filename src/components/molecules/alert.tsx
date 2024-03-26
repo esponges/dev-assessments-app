@@ -6,8 +6,9 @@ import {
 import { cn } from '@/lib/utils';
 
 type Props = {
-  title: string;
+  title?: string;
   description: string;
+  variant?: 'default' | 'destructive' | 'success';
   classNames?: {
     main?: string;
     title?: string;
@@ -15,9 +16,9 @@ type Props = {
   };
 };
 
-export function Alert({ title, description, classNames }: Props) {
+export function Alert({ title, description, classNames, variant }: Props) {
   return (
-    <ShadcnAlert className={cn(classNames?.main)}>
+    <ShadcnAlert className={cn(classNames?.main)} variant={variant}>
       <AlertTitle className={cn(classNames?.title)}>{title}</AlertTitle>
       <AlertDescription className={cn(classNames?.description)}>
         {description}
