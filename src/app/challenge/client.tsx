@@ -152,12 +152,15 @@ export function Challenge() {
           <>
             <Alert
               classNames={{ main: 'w-[20rem] my-4' }}
-              title="Please choose one technology from your tech stack"
-              description="You will be given a code challenge based on the technology you choose"
+              title="Please select the technology from your tech stack"
+              description="You will be evaluated in ONE of the technologies of your choice from your tech stack"
             />
             {/* todo: force this component to use X number of stacks */}
             <TechStackList
               stack={techStack}
+              showDetails={false}
+              useSelectLabelButton
+              title='Select Technology'
             />
             <Button
               className="my-4"

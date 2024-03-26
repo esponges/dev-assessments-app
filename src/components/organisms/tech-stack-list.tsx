@@ -4,14 +4,25 @@ import { Input } from '@/components/ui/input';
 import type { TechStack } from '@/types';
 import { Button } from '../ui/button';
 import { Heading } from '../atoms/heading';
+import { cn } from '@/lib/utils';
 
 type Props = {
   stack: TechStack;
   setStack?: (stack: TechStack) => void;
   title?: string;
+  showDetails?: boolean;
+  useSelectLabelButton?: boolean;
+  onTechClick?: (tech: string) => void;
 };
 
-export function TechStackList({ stack, setStack, title }: Props) {
+export function TechStackList({
+  stack,
+  setStack,
+  title,
+  showDetails = true,
+  useSelectLabelButton = false,
+  onTechClick,
+}: Props) {
   const handleTechStackUpdate = (key: string, value: number) => {
     const updatedStack =
       value > 0
@@ -53,7 +64,7 @@ export function TechStackList({ stack, setStack, title }: Props) {
   };
 
   return (
-    <div className='text-center'>
+    <div className="text-center">
       <Heading
         variant="h1"
         className="text-center"
@@ -66,26 +77,39 @@ export function TechStackList({ stack, setStack, title }: Props) {
           {stack.map((el, i) => (
             <div
               key={el.tech + i}
-              className="grid items-center gap-1.5 my-1 grid-cols-2"
+              className={cn("items-center grid", showDetails && "gap-1.5 my-1 grid-cols-2")}
             >
-              <Label htmlFor={el.tech}>{el.tech}</Label>
+              {useSelectLabelButton ? (
+                <Button
+                  onClick={() => onTechClick && onTechClick(el.tech)}
+                  className="my-2"
+                >
+                  {el.tech}
+                </Button>
+              ) : (
+                <Label htmlFor={el.tech}>{el.tech}</Label>
+              )}
               {/* send to the right */}
-              <div className="flex justify-end gap-1.5">
-                <Input
-                  type="number"
-                  id={el.tech}
-                  className="max-w-[4rem]"
-                  value={el.experience || 0}
-                  onChange={(e) =>
-                    handleTechStackUpdate(el.tech, Number(e.target.value))
-                  }
-                />
-                <Button onClick={() => handleRemoveTech(el.tech)}>X</Button>
-              </div>
+              {showDetails ? (
+                <div className="flex justify-end gap-1.5">
+                  <Input
+                    type="number"
+                    id={el.tech}
+                    className="max-w-[4rem]"
+                    value={el.experience || 0}
+                    onChange={(e) =>
+                      handleTechStackUpdate(el.tech, Number(e.target.value))
+                    }
+                  />
+                  <Button onClick={() => handleRemoveTech(el.tech)}>X</Button>
+                </div>
+              ) : null}
             </div>
           ))}
         </div>
-      ) : <p>No tech stack detected</p>}
+      ) : (
+        <p>No tech stack detected</p>
+      )}
       {/* add element */}
       <Heading
         variant="h1"
