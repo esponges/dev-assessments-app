@@ -161,6 +161,7 @@ export function Challenge() {
               showDetails={false}
               useSelectLabelButton
               title='Select Technology'
+              showAddTech={false}
             />
             <Button
               className="my-4"

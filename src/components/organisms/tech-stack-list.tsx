@@ -13,6 +13,7 @@ type Props = {
   showDetails?: boolean;
   useSelectLabelButton?: boolean;
   onTechClick?: (tech: string) => void;
+  showAddTech?: boolean;
 };
 
 export function TechStackList({
@@ -22,6 +23,7 @@ export function TechStackList({
   showDetails = true,
   useSelectLabelButton = false,
   onTechClick,
+  showAddTech = true,
 }: Props) {
   const handleTechStackUpdate = (key: string, value: number) => {
     const updatedStack =
@@ -77,7 +79,10 @@ export function TechStackList({
           {stack.map((el, i) => (
             <div
               key={el.tech + i}
-              className={cn("items-center grid", showDetails && "gap-1.5 my-1 grid-cols-2")}
+              className={cn(
+                'items-center grid',
+                showDetails && 'gap-1.5 my-1 grid-cols-2'
+              )}
             >
               {useSelectLabelButton ? (
                 <Button
@@ -111,31 +116,35 @@ export function TechStackList({
         <p>No tech stack detected</p>
       )}
       {/* add element */}
-      <Heading
-        variant="h1"
-        className="text-center"
-      >
-        Add new technology
-      </Heading>
-      <form
-        onSubmit={handleAddTech}
-        className="grid items-center gap-1.5 my-1 grid-cols-2"
-      >
-        <Input
-          type="text"
-          id="tech"
-          placeholder="Technology/framework"
-        />
-        <div className="flex justify-end gap-1.5">
-          <Input
-            type="number"
-            id="experience"
-            placeholder="Years"
-            className="max-w-[5rem]"
-          />
-          <Button type="submit">Add</Button>
-        </div>
-      </form>
+      {showAddTech ? (
+        <>
+          <Heading
+            variant="h1"
+            className="text-center"
+          >
+            Add new technology
+          </Heading>
+          <form
+            onSubmit={handleAddTech}
+            className="grid items-center gap-1.5 my-1 grid-cols-2"
+          >
+            <Input
+              type="text"
+              id="tech"
+              placeholder="Technology/framework"
+            />
+            <div className="flex justify-end gap-1.5">
+              <Input
+                type="number"
+                id="experience"
+                placeholder="Years"
+                className="max-w-[5rem]"
+              />
+              <Button type="submit">Add</Button>
+            </div>
+          </form>
+        </>
+      ) : null}
     </div>
   );
 }
