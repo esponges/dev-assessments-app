@@ -23,6 +23,9 @@ const createChallenge = async (tech: Tech) => {
     {
       method: 'POST',
       body: JSON.stringify(tech),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     }
   );
 
@@ -108,7 +111,15 @@ export function Challenge() {
 
   const { latestTechStack: techStack } = useUserDetails();
 
-  const { mutate, isPending } = useMutation<
+  const selectedStackYears = useMemo(() => {
+    if (!selectedTech) return 0;
+
+    const selectedStack = techStack.find((el) => el.tech === selectedTech);
+
+    return selectedStack?.experience || 0;
+  }, [selectedTech, techStack]);
+
+  const { mutate: create, isPending } = useMutation<
     CreateMutationResponse,
     Error,
     Tech
@@ -132,12 +143,15 @@ export function Challenge() {
 
   const handleCreateChallenge = useCallback(async () => {
     if (techStack.length > 0) {
-      mutate(techStack[0]);
+      create({
+        tech: selectedTech as string,
+        experience: selectedStackYears,
+      });
     } else {
       // todo: use a toast or a modal
       alert('Please choose a technology');
     }
-  }, [mutate, techStack]);
+  }, [create, techStack, selectedTech, selectedStackYears]);
 
   const handleEvaluateChallenge = useCallback(
     async (code: string) => {
@@ -159,7 +173,6 @@ export function Challenge() {
             {/* todo: force this component to use X number of stacks */}
             <TechStackList
               stack={techStack}
-              showDetails={false}
               useSelectLabelButton
               title="Select Technology"
               showAddTech={false}
@@ -170,11 +183,11 @@ export function Challenge() {
                 <Alert
                   variant="destructive"
                   description={`
-                  You will be evaluated in this technology only. 
+                  You will be evaluated in the following technology ONLY. 
                   You can later be evaluated in other technologies.
                   `}
                 />
-                <Heading variant="h1">{selectedTech}</Heading>
+                <Heading variant="h1">{`${selectedStackYears} years of experience in ${selectedTech}`}</Heading>
               </div>
             ) : null}
             <Button
