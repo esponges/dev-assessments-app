@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import type { Tech, TechStack } from '@/types';
 import { Editor } from '@/components/organisms/editor';
 import { useUserDetails } from '@/lib/hooks';
+import { Modal } from '@/components/molecules/modal';
 
 type CreateMutationResponse = {
   challenge: string;
@@ -103,8 +104,23 @@ const MOCKED_EVALUATION: EvaluateMutationResponse = {
     themes more efficiently when the number of themes grows.`,
 };
 
+function PendingChallenge({ isCreating }: { isCreating?: boolean }) {
+  return (
+    <Alert
+      classNames={{
+        main: 'w-[20rem] my-4',
+      }}
+      title={`${isCreating ? 'Generating' : 'Evaluating'} Assessment`}
+      description={`Please wait while we ${
+        isCreating ? 'create' : 'evaluate'
+      } your challenge`}
+    />
+  );
+}
+
 export function Challenge() {
-  const [challenge, setChallenge] = useState<string>('');
+  const [challenge, setChallenge] = useState<string>(MOCKED_CHALLENGE);
+  const [solution, setSolution] = useState<string>('');
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
   const [evaluation, setEvaluation] =
     useState<EvaluateMutationResponse | null>();
@@ -154,14 +170,16 @@ export function Challenge() {
   }, [create, techStack, selectedTech, selectedStackYears]);
 
   const handleEvaluateChallenge = useCallback(
-    async (code: string) => {
-      evaluate({ devResponse: code, challenge });
+    async () => {
+      evaluate({ devResponse: solution, challenge });
     },
-    [evaluate, challenge]
+    [evaluate, challenge, solution]
   );
 
   const content = useMemo(() => {
     switch (true) {
+      case isPending || isEvaluating:
+        return <PendingChallenge isCreating={isPending} />;
       case !challenge:
         return (
           <>
@@ -217,6 +235,16 @@ export function Challenge() {
               language="javascript"
               isLoading={isEvaluating}
               onSubmit={handleEvaluateChallenge}
+              onEditorChange={setSolution}
+            />
+            <Modal
+              _id="modal"
+              title="Are you sure you want to submit your challenge?"
+              content="This action cannot be undone."
+              triggerContent={
+                <Button className="mt-4">Submit challenge</Button>
+              }
+              onAccept={handleEvaluateChallenge}
             />
           </>
         );
@@ -247,6 +275,7 @@ export function Challenge() {
     handleCreateChallenge,
     handleEvaluateChallenge,
     selectedTech,
+    selectedStackYears,
   ]);
 
   return (

@@ -11,7 +11,7 @@ type Props = EditorProps & {
   language: string;
   isLoading?: boolean;
   CTALabel?: string;
-  onContentSave?: (value: string) => void;
+  onEditorChange?: (value: string) => void;
   onSubmit?: (value: string) => void;
   height?: string;
   classNames?: {
@@ -19,6 +19,7 @@ type Props = EditorProps & {
     editor?: string;
     button?: string;
   };
+  onChange?: (e: monaco.editor.IModelContentChangedEvent) => void;
 };
 
 const EDITOR_LANGUAGES = [
@@ -38,7 +39,7 @@ const EDITOR_LANGUAGES = [
 
 export const Editor = ({
   value,
-  onContentSave,
+  onEditorChange,
   isLoading,
   CTALabel,
   onSubmit,
@@ -57,8 +58,8 @@ export const Editor = ({
   };
 
   const handleChange = (content: string | undefined) => {
-    if (!content || !onContentSave) return;
-    onContentSave(content);
+    if (!content || !onEditorChange) return;
+    onEditorChange(content);
   };
 
   const handleSubmit = () => {

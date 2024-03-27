@@ -124,7 +124,6 @@ function AddResume() {
         title="No resume found"
         description="Please add a resume to your account to generate an assessment"
       />
-      {/* give link to user to go to assess-profile */}
       <Button
         className="mt-10"
         href="/assess-profile"
@@ -143,7 +142,7 @@ function PendingAssessment({ isCreating }: { isCreating?: boolean }) {
       }}
       title={`${isCreating ? 'Generating' : 'Evaluating'} Assessment`}
       description={`Please wait while we ${
-        isCreating ? 'generate' : 'evaluating'
+        isCreating ? 'generate' : 'evaluate'
       } your assessment`}
     />
   );

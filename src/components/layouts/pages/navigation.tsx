@@ -30,12 +30,12 @@ import {
 import { useUserDetails } from '@/lib/hooks';
 
 const links = [
-  { href: '/assess-profile', title: 'Assess Dev Profile' },
+  { href: '/assess-profile', title: 'Upload CV' },
   {
     href: '/evaluate',
-    title: 'Evaluate Developer',
+    title: 'Get evaluated',
   },
-  { href: '/challenge', title: 'Code Challenge' },
+  { href: '/challenge', title: 'Code challenge' },
   { href: '/devs/search', title: 'Get Developer Profiles' },
 ];
 
